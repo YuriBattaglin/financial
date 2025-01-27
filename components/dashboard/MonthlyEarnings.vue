@@ -3,7 +3,7 @@ import { ref } from "vue";
 import { computed } from "vue";
 import { useTheme } from "vuetify";
 const theme = useTheme();
-const secondary = theme.current.value.colors.secondary;
+const success = theme.current.value.colors.success;
 
 /* Chart */
 const areachartOptions = computed(() => {
@@ -22,7 +22,7 @@ const areachartOptions = computed(() => {
       },
       group: "sparklines",
     },
-    colors: [secondary],
+    colors: [success],
     stroke: {
       curve: "smooth",
       width: 2,
