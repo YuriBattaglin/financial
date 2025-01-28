@@ -4,7 +4,7 @@ import { UserIcon, MailIcon, ListCheckIcon } from 'vue-tabler-icons';
 
 <template>
     <!-- ---------------------------------------------- -->
-    <!-- notifications DD -->
+    <!-- User DD -->
     <!-- ---------------------------------------------- -->
     <v-menu :close-on-content-click="false">
         <template v-slot:activator="{ props }">

@@ -41,8 +41,8 @@ const sDrawer = ref(true);
                     size="small">
                     <Menu2Icon size="20" stroke-width="1.5" />
                 </v-btn>
-                <!-- Notification -->
-                <LayoutFullVerticalHeaderNotificationDD/>
+                <!-- Moon -->
+                <LayoutFullVerticalHeaderMoonDD/>
             </div>
             <div>
                 <!-- User Profile -->

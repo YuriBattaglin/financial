@@ -24,7 +24,7 @@ const sidebarItem: menu[] = [
     {
         title: 'Dashboard',
         icon: LayoutDashboardIcon,
-        to: '/'
+        to: '/dashboard'
     },
     { header: 'utilities' },
     {
@@ -36,17 +36,6 @@ const sidebarItem: menu[] = [
         title: 'Shadow',
         icon: CopyIcon,
         to: '/ui/shadow'
-    },
-    { header: 'auth' },
-    {
-        title: 'Login',
-        icon: LoginIcon,
-        to: '/auth/login'
-    },
-    {
-        title: 'Register',
-        icon: UserPlusIcon,
-        to: '/auth/register'
     },
     { header: 'Extra' },
     {

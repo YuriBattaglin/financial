@@ -70,7 +70,7 @@
 
         > .v-list-item.v-list-item--active,
         .v-list-item--active > .v-list-item__overlay {
-            background: rgb(var(--v-theme-textSecondary));
+            background: rgb(var(--v-theme-active));
             color: white !important;
         }
 

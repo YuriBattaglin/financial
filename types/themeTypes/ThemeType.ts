@@ -23,6 +23,7 @@ export type ThemeTypes = {
         inputBorder?: string;
         containerBg?: string;
         surface?: string;
+        active?: string;
         'on-surface-variant'?: string;
         grey100?: string;
         grey200?: string;

@@ -5,8 +5,8 @@ useHead({
   meta: [{ content: title }],
   titleTemplate: (titleChunk) => {
     return titleChunk
-      ? `${titleChunk} - Nuxt3 finantial controller APP`
-      : "Finantial - Nuxt3 finantial controller APP";
+      ? `${titleChunk}`
+      : "Finantial";
   },
 });
 </script>

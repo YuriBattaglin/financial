@@ -1,12 +1,15 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useTheme } from "vuetify";
 const theme = useTheme();
 const muted = theme.current.value.colors.muted;
 const success = theme.current.value.colors.success;
 const select = ref("March 2023");
 const items = ref(["March 2023", "April 2023", "May 2023"]);
+const isDarkTheme = ref(false);
+const savedTheme = localStorage.getItem("theme") || "DefaultTheme"; // Pega 'DefaultTheme' caso não tenha no localStorage
+isDarkTheme.value = savedTheme === "DarkTheme";
+
 const chartOptions = computed(() => {
   return {
     series: [
@@ -37,7 +40,7 @@ const chartOptions = computed(() => {
         type: "bar",
         height: 370,
         offsetX: -15,
-        toolbar: { show: true },
+        toolbar: { show: true},
         foreColor: "#adb0bb",
         fontFamily: "inherit",
         sparkline: { enabled: false },
@@ -78,7 +81,7 @@ const chartOptions = computed(() => {
         lineCap: "butt",
         colors: ["transparent"],
       },
-      tooltip: { theme: "light" },
+      tooltip: { theme: isDarkTheme.value ? "dark" : "light" },
 
       responsive: [
         {

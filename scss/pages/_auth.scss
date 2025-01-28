@@ -11,3 +11,7 @@
         background: radial-gradient(rgb(210, 241, 223), rgb(211, 215, 250), rgb(186, 216, 244)) 0% 0% / 400% 400%;
     }
 }
+
+.authentication.dark::before {
+    background: var(--v-theme-surface);
+}

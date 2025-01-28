@@ -3,9 +3,20 @@
 definePageMeta({
   layout: "blank",
 });
+import { ref, onMounted } from 'vue';
+import { useTheme } from "vuetify";
+
+const isDarkTheme = ref(false);
+onMounted(() => {
+   const savedTheme = localStorage.getItem("theme") || "DefaultTheme"; 
+  const theme = useTheme();
+  isDarkTheme.value = savedTheme === "DarkTheme";
+  theme.global.name.value = savedTheme;  // Aplica o tema globalmente
+});
 </script>
+
 <template>
-    <div class="authentication">
+   <div :class="{'authentication': true, 'dark': isDarkTheme}">
         <v-container fluid class="pa-3">
             <v-row class="h-100vh d-flex justify-center align-center">
                 <v-col cols="12" lg="4" xl="3" class="d-flex align-center">
@@ -14,7 +25,7 @@ definePageMeta({
                             <div class="d-flex justify-center py-4">
                                 <LayoutFullLogo />
                             </div>
-                            <div class="text-body-1 text-muted text-center mb-3">Your Social Campaigns</div>
+                            <div class="text-body-1 text-muted text-center mb-3">Your finance controller</div>
                             <AuthLoginForm />
                             <h6 class="text-h6 text-muted font-weight-medium d-flex justify-center align-center mt-3">
                                 New to Finance?

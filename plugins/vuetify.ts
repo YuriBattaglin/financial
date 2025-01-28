@@ -8,18 +8,19 @@ import VueApexCharts from 'vue3-apexcharts';
 import VueTablerIcons from 'vue-tabler-icons';
 import '@/scss/style.scss';
 import {
-  PurpleTheme,
-} from "@/theme/LightTheme";
+  DefaultTheme, DarkTheme
+} from "@/theme/Theme";
 export default defineNuxtPlugin((nuxtApp) => {
   const vuetify = createVuetify({
     components,
     directives,
     theme: {
-      defaultTheme: "PurpleTheme",
+      defaultTheme: "DefaultTheme", 
       themes: {
-        PurpleTheme,
+        DefaultTheme,
+        DarkTheme
       },
-    },
+    }
   });
   nuxtApp.vueApp.use(vuetify);
   nuxtApp.vueApp.use(PerfectScrollbar);
