@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { ref, computed } from "vue";
 import { useTheme } from "vuetify";
 const theme = useTheme();
 const muted = theme.current.value.colors.muted;

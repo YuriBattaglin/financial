@@ -4,7 +4,9 @@ import { computed } from "vue";
 import { useTheme } from "vuetify";
 const theme = useTheme();
 const success = theme.current.value.colors.success;
-
+const isDarkTheme = ref(false);
+const savedTheme = localStorage.getItem("theme") || "DefaultTheme"; // Pega 'DefaultTheme' caso não tenha no localStorage
+isDarkTheme.value = savedTheme === "DarkTheme";
 /* Chart */
 const areachartOptions = computed(() => {
   return {
@@ -25,7 +27,7 @@ const areachartOptions = computed(() => {
     colors: [success],
     stroke: {
       curve: "smooth",
-      width: 2,
+      width: 3,
     },
     fill: {
       type: "solid",
@@ -35,7 +37,7 @@ const areachartOptions = computed(() => {
       size: 0,
     },
     tooltip: {
-      theme: "light",
+      theme: isDarkTheme.value ? "dark" : "light" ,
       x: {
         show: true,
       },

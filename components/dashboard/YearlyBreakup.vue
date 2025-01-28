@@ -4,6 +4,9 @@ import { useTheme } from "vuetify";
 const theme = useTheme();
 const success = theme.current.value.colors.success;
 const muted = theme.current.value.colors.muted;
+const isDarkTheme = ref(false);
+const savedTheme = localStorage.getItem("theme") || "DefaultTheme"; // Pega 'DefaultTheme' caso não tenha no localStorage
+isDarkTheme.value = savedTheme === "DarkTheme";
 const chartOptions = computed(() => {
   return {
     labels: ["series-1", "series-2", "series-3"],
@@ -36,7 +39,7 @@ const chartOptions = computed(() => {
     legend: {
       show: false,
     },
-    tooltip: { theme: "light", fillSeriesColor: false },
+    tooltip: { theme: isDarkTheme.value ? "dark" : "light", fillSeriesColor: false},
   };
 });
 const Chart = [38, 40, 25];
