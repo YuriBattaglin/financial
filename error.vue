@@ -22,7 +22,7 @@ const savedTheme = localStorage.getItem("theme") || "DarkTheme";
       <v-btn flat color="success" class="mb-4" to="/">Go Back to Home</v-btn>
     </div>
   </div>
-  <div v-else class="d-flex v-application justify-center align-center text-center h-100vh">
+  <div v-else class="d-flex v-application justify-center align-center text-center h-100vh" style="background-color: #FFF; color: black;" >
     <div>
       <img src="/images/background/errorGif.gif" width="500" alt="404" />
       <h1 class="text-h1 pt-3">Opps!!!</h1>
