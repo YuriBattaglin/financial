@@ -2,24 +2,53 @@
 import { ref, watchEffect } from 'vue';
 import UiParentCard from '@/components/shared/UiParentCard.vue';
 
-// Estado para armazenar os dados das finances
 const finances = ref<any[]>([]);
+const filterDialog = ref(false);  
+const filters = ref({
+    description: '', type: [], startDate: null,
+    endDate: null
+}); 
 
-// Configuração da tabela
 const headers = ref([
     { title: 'Description', key: 'description' },
     { title: 'Date', key: 'date' },
     { title: 'Type', key: 'type' },
     { title: 'Amount', key: 'amount' },
-    { title: 'Actions', key: 'actions' }, // Coluna de Ações
+    { title: 'Actions', key: 'actions' }, 
 ]);
 
-const dialog = ref(false); 
-const itemToDelete = ref<any>(null); 
-const snackbar = ref(false); 
+const dialog = ref(false);
+const itemToDelete = ref<any>(null);
+const snackbar = ref(false);
+const menuStart = ref(false);
+const menuEnd = ref(false);
+const formattedStartDate = ref('');
+const formattedEndDate = ref('');
+
+const onEndDateChange = (date) => {
+    if (!date) return '';
+    const parsedDate = new Date(date);
+    const day = `0${parsedDate.getDate()}`.slice(-2);
+    const month = `0${parsedDate.getMonth() + 1}`.slice(-2);
+    const year = parsedDate.getFullYear();
+    formattedEndDate.value = `${day}/${month}/${year}`;
+    menuEnd.value = false
+    return formattedEndDate.value;
+};
+
+const onStartDateChange = (date) => {
+    if (!date) return '';
+    const parsedDate = new Date(date);
+    const day = `0${parsedDate.getDate()}`.slice(-2);
+    const month = `0${parsedDate.getMonth() + 1}`.slice(-2);
+    const year = parsedDate.getFullYear();
+    formattedStartDate.value = `${day}/${month}/${year}`;
+    menuStart.value = false
+    return formattedStartDate.value;
+};
 
 useHead({
-  title: "Finances - Finantial Controller",  // Título da página
+    title: "Finances - Finantial Controller",  // Título da página
 });
 
 watchEffect(() => {
@@ -27,24 +56,48 @@ watchEffect(() => {
     finances.value = JSON.parse(storedData);
 
     finances.value.forEach((item: any) => {
-        const dateParts = item.date.split('/'); 
+        const dateParts = item.date.split('/');
         if (dateParts.length === 3) {
-            item.date = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`; 
+            item.date = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
         }
     });
 
     finances.value.sort((a, b) => {
-        const dateA = new Date(a.date).getTime(); 
-        const dateB = new Date(b.date).getTime(); // Converte a data para timestamp
-        return dateB - dateA; // Ordenação decrescente
+        return new Date(b.date).getTime() - new Date(a.date).getTime();
     });
-      // Após ordenação, formata as datas novamente para 'DD/MM/YYYY'
-      finances.value.forEach((item: any) => {
+    finances.value.forEach((item: any) => {
         const dateParts = item.date.split('-');
         if (dateParts.length === 3) {
-            item.date = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`; // Converte de volta para 'DD/MM/YYYY'
+            item.date = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
         }
     });
+
+    if (filters.value.description) {
+        finances.value = finances.value.filter(item =>
+            item.description.toLowerCase().includes(filters.value.description.toLowerCase())
+        );
+    }
+    
+    if (filters.value.type.length > 0) {
+        // @ts-ignore
+        finances.value = finances.value.filter(item => filters.value.type.includes(item.type));
+    }
+    if (filters.value.startDate || filters.value.endDate) {
+        finances.value = finances.value.filter(item => {
+            const itemDate = new Date(item.date.split('/').reverse().join('-')).getTime();
+            const startDate = filters.value.startDate ? new Date(filters.value.startDate).getTime() : null;
+            const endDate = filters.value.endDate ? new Date(filters.value.endDate).getTime() : null;
+
+            if (startDate && endDate) {
+                return itemDate >= startDate && itemDate <= endDate;
+            } else if (startDate) {
+                return itemDate >= startDate;
+            } else if (endDate) {
+                return itemDate <= endDate;
+            }
+            return true;
+        });
+    }
 });
 
 // Função para formatar valores em reais
@@ -80,13 +133,20 @@ const cancelDelete = () => {
     dialog.value = false; // Fecha o modal sem excluir
 };
 
+
+// Função para abrir o modal de filtros
+const openFilter = () => {
+    filterDialog.value = true;
+};
+
 </script>
 
 <template>
     <v-snackbar v-model="snackbar" @click="snackbar = false" timeout="3000" color="success" location="top right"
         elevation="12" variant="elevated" height="80px" min-height="60px" transition="slide-x-reverse-transition">
         <v-icon left size="30">mdi-check</v-icon>
-        <h3 style="margin: 0; font-size: 16px; font-weight: bold; color: white; display: inline-block; margin-left: 10px;">
+        <h3
+            style="margin: 0; font-size: 16px; font-weight: bold; color: white; display: inline-block; margin-left: 10px;">
             Data deleted successfully!
         </h3>
     </v-snackbar>
@@ -94,6 +154,8 @@ const cancelDelete = () => {
     <v-row>
         <v-col cols="12" md="12">
             <UiParentCard title="Finances list">
+                <v-text-field v-model="filters.description" class="px-4" label="Search" outlined dense></v-text-field>
+
                 <v-data-table :headers="headers" :items="finances" item-value="description" items-per-page="10"
                     class="px-4">
                     <template v-slot:[`item.amount`]="{ item }">
@@ -110,10 +172,10 @@ const cancelDelete = () => {
                     </template>
 
                     <template v-slot:[`item.actions`]="{ item }">
-                        <v-btn icon variant="text"  @click="editItem(item)">
+                        <v-btn icon variant="text" @click="editItem(item)">
                             <v-icon>mdi-pencil</v-icon>
                         </v-btn>
-                        <v-btn icon variant="text"  @click="confirmDelete(item)">
+                        <v-btn icon variant="text" @click="confirmDelete(item)">
                             <v-icon>mdi-delete</v-icon>
                         </v-btn>
                     </template>
@@ -136,13 +198,50 @@ const cancelDelete = () => {
         </v-card>
     </v-dialog>
 
+    <v-navigation-drawer v-model="filterDialog" app temporary location="right" width="300">
+        <v-card>
+            <v-card-title class="headline">Filter Options</v-card-title>
+            <v-card-text>
+
+                <v-label class="mt-5 mb-3">Date Range</v-label>
+                <div class="d-flex">
+                    <v-menu v-model="menuStart" :close-on-content-click="false">
+                        <template v-slot:activator="{ props }">
+                            <v-text-field v-model="formattedStartDate" label="Start Date" class="mr-2" readonly
+                                v-bind="props"></v-text-field>
+                        </template>
+                        <v-date-picker v-model="filters.startDate"
+                            @update:modelValue="onStartDateChange"></v-date-picker>
+                    </v-menu>
+                    <v-menu v-model="menuEnd" :close-on-content-click="false">
+                        <template v-slot:activator="{ props }">
+                            <v-text-field v-model="formattedEndDate" label="End Date" readonly
+                                v-bind="props"></v-text-field>
+                        </template>
+                        <v-date-picker v-model="filters.endDate" @update:modelValue="onEndDateChange"></v-date-picker>
+                    </v-menu>
+                </div>
+                <v-label>Type</v-label>
+                <div class="d-flex align-center justify-center">
+                    <v-checkbox v-model="filters.type" label="In" value="I" class="mr-4" />
+                    <v-checkbox v-model="filters.type" label="Out" value="O" />
+                </div>
+            </v-card-text>
+
+        </v-card>
+    </v-navigation-drawer>
+
     <v-footer app>
         <v-toolbar flat style="background-color: transparent;">
             <v-spacer></v-spacer>
+            <v-btn icon variant="tonal" size="x-large" class="mr-4" @click="openFilter">
+                <v-icon>mdi-filter</v-icon>
+            </v-btn>
             <v-btn icon variant="tonal" size="x-large" color="success"
                 @click="navigateTo('/finances/register'), { replace: true }">
                 <v-icon>mdi-plus</v-icon>
             </v-btn>
         </v-toolbar>
     </v-footer>
+
 </template>

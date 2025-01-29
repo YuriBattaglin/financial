@@ -107,7 +107,7 @@ onMounted(() => {
     }
 
     useHead({
-        title: isEditing.value ? "Editing finance - Finantial Controller" : "Register finance - Finantial Controller",  
+        title: isEditing.value ? "Editing finance - Finantial Controller" : "Register finance - Finantial Controller",
     });
 });
 </script>
@@ -123,6 +123,13 @@ onMounted(() => {
                             :rules="[descriptionRules]" required></v-text-field>
                         <v-text-field v-model="amount" :rules="[amountRules]" label="Amount" type="number"
                             required></v-text-field>
+                        <v-menu v-model="menu" :close-on-content-click="false" >
+                            <template v-slot:activator="{ props }">
+                                <v-text-field v-model="formattedDate" label="Select Date"
+                                    prepend-inner-icon="mdi-calendar" readonly v-bind="props" />
+                            </template>
+                            <v-date-picker v-model="selectedDate" @update:model-value="onDateChange"></v-date-picker>
+                        </v-menu>
                         <v-radio-group v-model="type" inline>
                             <v-radio label="In" value="I" color="success" class="mr-5"></v-radio>
                             <v-radio label="Out" value="O" color="success"></v-radio>
@@ -130,13 +137,7 @@ onMounted(() => {
                         <v-textarea label="Note" v-model="note" rows="4" outlined prepend-inner-icon="mdi-message"
                             maxlength="100"></v-textarea>
 
-                        <v-menu v-model="menu" :close-on-content-click="false">
-                            <template v-slot:activator="{ props }">
-                                <v-text-field v-model="formattedDate" label="Select Date"
-                                    prepend-inner-icon="mdi-calendar" readonly v-bind="props" />
-                            </template>
-                            <v-date-picker v-model="selectedDate" @update:model-value="onDateChange"></v-date-picker>
-                        </v-menu>
+
                     </div>
                 </UiParentCard>
             </v-col>
