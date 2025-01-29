@@ -8,16 +8,16 @@ import VueApexCharts from 'vue3-apexcharts';
 import VueTablerIcons from 'vue-tabler-icons';
 import '@/scss/style.scss';
 import {
-  DefaultTheme, DarkTheme
+  LightTheme, DarkTheme
 } from "@/theme/Theme";
 export default defineNuxtPlugin((nuxtApp) => {
   const vuetify = createVuetify({
     components,
     directives,
     theme: {
-      defaultTheme: "DefaultTheme", 
+      defaultTheme: "DarkTheme", 
       themes: {
-        DefaultTheme,
+        LightTheme,
         DarkTheme
       },
     }

@@ -1,7 +1,7 @@
 import {
-    ApertureIcon,
-    CopyIcon,
-    LayoutDashboardIcon, LoginIcon, MoodHappyIcon, TypographyIcon, UserPlusIcon
+    CurrencyDollarIcon,
+    LayoutDashboardIcon, LogoutIcon,
+    ZoomMoneyIcon
 } from 'vue-tabler-icons';
 
 export interface menu {
@@ -26,27 +26,17 @@ const sidebarItem: menu[] = [
         icon: LayoutDashboardIcon,
         to: '/dashboard'
     },
-    { header: 'utilities' },
+    { header: 'Functions' },
     {
-        title: 'Typography',
-        icon: TypographyIcon,
-        to: '/ui/typography'
+        title: 'Finances',
+        icon: CurrencyDollarIcon,
+        to: '/finances/list'
     },
+    { header: 'More' },
     {
-        title: 'Shadow',
-        icon: CopyIcon,
-        to: '/ui/shadow'
-    },
-    { header: 'Extra' },
-    {
-        title: 'Icons',
-        icon: MoodHappyIcon,
-        to: '/icons'
-    },
-    {
-        title: 'Sample Page',
-        icon: ApertureIcon,
-        to: '/sample-page'
+        title: 'Logout',
+        icon: LogoutIcon,
+        to: '/auth/login'
     },
 ];
 

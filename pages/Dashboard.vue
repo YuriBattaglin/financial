@@ -1,41 +1,38 @@
 <script setup lang="ts">
 /*Call Components*/
- import SalesOverview from '@/components/dashboard/SalesOverview.vue';
-import YearlyBreakup from '@/components/dashboard/YearlyBreakup.vue';
-import MonthlyEarning from '@/components/dashboard/MonthlyEarnings.vue';
-import RecentTransaction from '@/components/dashboard/RecentTransaction.vue';
-import ProductPerformance from '@/components/dashboard/ProductPerformance.vue';
-import ProductCards from '@/components/dashboard/ProductCards.vue';
+ import TransactionsOverview from '@/components/dashboard/TransactionsOverview.vue';
+import TotalGains from '@/components/dashboard/TotalGains.vue';
+import MonthlyFinance from '@/components/dashboard/MonthlyFinance.vue';
+import LatestTransactions from '@/components/dashboard/LatestTransactions.vue';
+import PowerfulTransactions from '@/components/dashboard/PowerfulTransactions.vue';
+
+useHead({
+  title: "Dashboard - Finantial Controller",  // Título da página
+});
 </script>
 <template>
     <v-row>
         <v-col cols="12">
             <v-row>
-                <!-- Sales overview -->
-                <v-col cols="12" lg="8">
-                    <SalesOverview />
-                </v-col>
-                <!-- Yearly Breakup / Monthly Earnings -->
                 <v-col cols="12" lg="4">
                     <div class="mb-6">
-                        <YearlyBreakup />
+                        <TotalGains />
                     </div>
                     <div>
-                        <MonthlyEarning />
+                        <MonthlyFinance />
                     </div>
                 </v-col>
-                <!-- Recent transaction -->
-                <v-col cols="12" lg="4">
-                    <RecentTransaction />
-                </v-col>
-                <!-- Product performence -->
                 <v-col cols="12" lg="8">
-                    <ProductPerformance />
+                    <TransactionsOverview />
                 </v-col>
-                <!-- Product Cards
-                <v-col cols="12">
-                    <ProductCards />
-                </v-col> -->
+               
+                  <v-col cols="12" lg="8">
+                    <LatestTransactions />
+                </v-col>
+                <v-col cols="12" lg="4">
+                    <PowerfulTransactions />
+                </v-col>
+              
             </v-row>
         </v-col>
         <v-col class="text-center mt-2">

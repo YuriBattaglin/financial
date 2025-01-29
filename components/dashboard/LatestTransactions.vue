@@ -1,0 +1,78 @@
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+
+const latestTransactions = ref<any[]>([]);
+
+const formatCurrency = (amount: number) => {
+  return amount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+};
+
+onMounted(() => {
+  // Recupera os dados do localStorage
+  const storedData = localStorage.getItem('finances') || '[]';
+
+  if (storedData) {
+    // Converte os dados em um array
+    const allTransactions = JSON.parse(storedData);
+
+    // Ordena os dados pela data
+    latestTransactions.value = allTransactions
+      .sort((a: { date: string }, b: { date: string }) => {
+        // Converte a data de 'DD/MM/YYYY' para o formato 'YYYY-MM-DD' para que o JavaScript possa interpretar
+        const parseDate = (dateStr: string) => {
+          const [day, month, year] = dateStr.split('/');
+          return new Date(`${year}-${month}-${day}`);
+        };
+
+        const dateA = parseDate(a.date);
+        const dateB = parseDate(b.date);
+        return dateB.getTime() - dateA.getTime(); // Ordem decrescente (mais recente primeiro)
+      })
+      .slice(0, 4); // Pegando apenas os 4 primeiros
+  } else {
+    latestTransactions.value = [];
+  }
+});
+</script>
+
+<template>
+    <v-card elevation="10" class="">
+        <v-card-item class="pa-6">
+            <v-card-title class="text-h5 pt-sm-2 pb-7">Latest Transactions</v-card-title>
+            <v-table class="month-table">
+                <thead>
+                    <tr>
+                        <th class="text-subtitle-1 font-weight-bold">Description</th>
+                        <th class="text-subtitle-1 font-weight-bold">Date</th>
+                        <th class="text-subtitle-1 font-weight-bold">Type</th>
+                        <th class="text-subtitle-1 font-weight-bold text-right">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="item in latestTransactions" :key="item.description" class="month-item">
+                        <td>
+                            <div class="">
+                                <h6 class="text-subtitle-1 font-weight-bold">{{ item.description }}</h6>
+                                <div class="text-13 mt-1 text-muted">{{ item.note }}</div>
+                            </div>
+                        </td>
+                        <td>
+                            <h6 class="text-body-1 text-success">{{ item.date }}</h6>
+                        </td>
+                        <td>
+                            <v-chip :class="'text-body-1 bg-' + (item.type === 'I' ? 'success' : 'muted')" color="white"
+                                size="small">
+                                {{ item.type === 'I' ? 'IN' : 'OUT' }}
+                            </v-chip>
+                        </td>
+                        <td>
+                            <h6 class="text-h6 text-right">
+                                 {{ formatCurrency(parseFloat(item.amount)) }}
+                            </h6>
+                        </td>
+                    </tr>
+                </tbody>
+            </v-table>
+        </v-card-item>
+    </v-card>
+</template>

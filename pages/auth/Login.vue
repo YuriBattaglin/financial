@@ -8,7 +8,7 @@ import { useTheme } from "vuetify";
 
 const isDarkTheme = ref(false);
 onMounted(() => {
-   const savedTheme = localStorage.getItem("theme") || "DefaultTheme"; 
+   const savedTheme = localStorage.getItem("theme") || "DarkTheme"; 
   const theme = useTheme();
   isDarkTheme.value = savedTheme === "DarkTheme";
   theme.global.name.value = savedTheme;  // Aplica o tema globalmente

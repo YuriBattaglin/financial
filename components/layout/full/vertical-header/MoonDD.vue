@@ -4,7 +4,7 @@ import { useTheme } from "vuetify";
 import { ref, computed, watch } from "vue";
 
 const theme = useTheme();
-const savedTheme = localStorage.getItem("theme") || "DefaultTheme";
+const savedTheme = localStorage.getItem("theme") || "DarkTheme";
 
 // Aplica o tema salvo
 theme.global.name.value = savedTheme;
@@ -14,7 +14,7 @@ const currentTheme = computed(() => theme.global.name.value);
 
 // Função para alternar entre temas
 const toggleTheme = () => {
-  const newTheme = theme.global.name.value === "DefaultTheme" ? "DarkTheme" : "DefaultTheme";
+  const newTheme = theme.global.name.value === "LightTheme" ? "DarkTheme" : "LightTheme";
   theme.global.name.value = newTheme;
   localStorage.setItem("theme", newTheme);
 };

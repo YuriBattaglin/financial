@@ -18,11 +18,6 @@ const checkbox = ref(true);
                 <v-checkbox v-model="checkbox"  color="success" hide-details>
                     <template v-slot:label >Remember this Device</template>
                 </v-checkbox>
-                <div class="ml-sm-auto">
-                    <NuxtLink to="/dashboard"
-                        class="text-success text-decoration-none text-body-1 opacity-1 font-weight-medium">Forgot
-                        Password ?</NuxtLink>
-                </div>
             </div>
         </v-col>
         <v-col cols="12" class="pt-0">

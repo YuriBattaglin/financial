@@ -1,7 +1,7 @@
 import type { ThemeTypes } from '@/types/themeTypes/ThemeType';
 
-const DefaultTheme: ThemeTypes = {
-    name: 'DefaultTheme',
+const LightTheme: ThemeTypes = {
+    name: 'LightTheme',
     dark: false,
     variables: {
         'border-color': '#eeeeee',
@@ -25,7 +25,7 @@ const DefaultTheme: ThemeTypes = {
         textSecondary: '#2A3547',
         borderColor: '#e5eaef',
         inputBorder: '#000',
-        active: '#5a6a85',
+        active: '#2A3547',
         containerBg: '#ffffff',
         hoverColor: '#f6f9fc',
         surface: '#fff',
@@ -69,4 +69,4 @@ const DarkTheme: ThemeTypes = {
         grey200: '#1A1A1A'           // Cor de cinza mais profundo
     }
 };
-export { DefaultTheme, DarkTheme};
+export { LightTheme, DarkTheme};
