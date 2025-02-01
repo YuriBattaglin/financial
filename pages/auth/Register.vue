@@ -13,6 +13,10 @@ onMounted(() => {
   isDarkTheme.value = savedTheme === "DarkTheme";
   theme.global.name.value = savedTheme;  // Aplica o tema globalmente
 });
+
+useHead({
+  title: "Register - Finantial Controller",  // Título da página
+});
 </script>
 <template>
  <div :class="{'authentication': true, 'dark': isDarkTheme}">

@@ -13,6 +13,10 @@ onMounted(() => {
   isDarkTheme.value = savedTheme === "DarkTheme";
   theme.global.name.value = savedTheme;  // Aplica o tema globalmente
 });
+
+useHead({
+  title: "Login - Finantial Controller",  // Título da página
+});
 </script>
 
 <template>

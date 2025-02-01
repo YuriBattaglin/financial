@@ -1,24 +1,97 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-const checkbox = ref(true);
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+const formRef = ref();
+const name = ref('');
+const email = ref('');
+const password = ref('');
+const emailError = ref('');
+
+const nameRules = (value: string) => {
+    if (!value) return 'Name is required!';
+    if (value.length < 3) return 'Name must be at least 3 characters long!';
+    if (value.length > 25) return 'Name must be at most 25 characters long!';
+    if (!/^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/.test(value)) return 'Name must contain only letters and spaces!';
+    return true;
+};
+
+const emailRules = (value: string) => {
+    emailError.value = '';
+    if (!value) return 'Email is required!';
+    if (!/^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/.test(value)) return 'Invalid email!';
+    return true;
+};
+
+const passwordRules = (value: string) => {
+    if (!value) return 'Password is required!';
+    if (value.length < 8) return 'Password must be at least 8 characters long!';
+    if (value.length > 24) return 'Password must be at most 24 characters long!';
+    return true;
+};
+
+const saveUser = () => {
+    // Retrieve existing users or initialize an empty array
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+
+    // Check if a user with the same email already exists
+    const userExists = users.some(user => user.email === email.value);
+
+    if (userExists) {
+        emailError.value = 'User with this email already exists!';  // Set the error message
+        return; // Do not proceed if the user exists
+    }
+
+    // Clear the error message if the email is valid
+    emailError.value = '';
+
+    // Add the new user to the list
+    users.push({
+        name: name.value,
+        email: email.value,
+        password: password.value
+    });
+
+    // Save the updated list in localStorage
+    localStorage.setItem('users', JSON.stringify(users));
+    
+    router.push('/auth/login');
+};
+
+const validateAndSubmit = async () => {
+    if (!formRef.value) return;
+    const { valid } = await formRef.value.validate();
+    if (valid) {
+        saveUser(); // Save before redirecting
+    }
+};
 </script>
 
 <template>
-    <v-row class="d-flex mb-3">
-        <v-col cols="12">
-            <v-label class="font-weight-bold mb-1">Name</v-label>
-            <v-text-field variant="outlined" hide-details color="success"></v-text-field>
-        </v-col>
-        <v-col cols="12">
-            <v-label class="font-weight-bold mb-1">Email Address</v-label>
-            <v-text-field variant="outlined" type="email" hide-details color="success"></v-text-field>
-        </v-col>
-        <v-col cols="12">
-            <v-label class="font-weight-bold mb-1">Password</v-label>
-            <v-text-field variant="outlined" type="password"  hide-details color="success"></v-text-field>
-        </v-col>
-        <v-col cols="12" >
-            <v-btn to="/dashboard" color="black" variant="outlined" size="large" block   flat>Sign up</v-btn>
-        </v-col>
-    </v-row>
+    <v-form ref="formRef" @submit.prevent="validateAndSubmit">
+        <v-row class="d-flex mb-3">
+            <v-col cols="12">
+                <v-label class="font-weight-bold ">Name</v-label>
+                <v-text-field v-model="name" variant="outlined" color="success"
+                    :rules="[nameRules]"></v-text-field>
+            </v-col>
+            <v-col cols="12">
+                <v-label class="font-weight-bold ">Email Address</v-label>
+                <v-text-field v-model="email" variant="outlined" type="email" color="success"
+                    :rules="[emailRules]"></v-text-field>
+                <v-label v-if="emailError" class="font-weight-bold text-error">{{ emailError }}</v-label>
+            </v-col>
+            <v-col cols="12">
+                <v-label class="font-weight-bold ">Password</v-label>
+                <v-text-field v-model="password" variant="outlined" type="password" color="success"
+                    :rules="[passwordRules]"></v-text-field>
+            </v-col>
+            <v-col cols="12">
+                <v-btn @click="validateAndSubmit" color="black" variant="outlined" size="large" block flat>
+                    Sign up
+                </v-btn>
+            </v-col>
+        </v-row>
+    </v-form>
 </template>

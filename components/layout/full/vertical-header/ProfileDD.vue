@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { UserIcon, MailIcon, ListCheckIcon } from 'vue-tabler-icons';
+const loggedUser = JSON.parse(localStorage.getItem('loggedUser') || '{}');
 </script>
 
 <template>
@@ -8,6 +8,7 @@ import { UserIcon, MailIcon, ListCheckIcon } from 'vue-tabler-icons';
     <!-- ---------------------------------------------- -->
     <v-menu :close-on-content-click="false">
         <template v-slot:activator="{ props }">
+            <v-label>{{ loggedUser.name || 'User' }}</v-label>
             <v-btn class="profileBtn custom-hover-success" variant="text" v-bind="props" icon>
                 <v-avatar size="35">
                     <img src="/images/users/avatar-1.jpg" height="35" alt="user" />
