@@ -4,7 +4,7 @@ import { ref } from 'vue';
 <template>
     <div class="logo">
         <NuxtLink to="/dashboard">
-            <img src="@/favicon.ico" alt="Logo Nuxt" />
+            <img src="/favicon.ico" alt="Logo Nuxt" />
         </NuxtLink>
         Finantial
     </div>
