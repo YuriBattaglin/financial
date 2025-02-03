@@ -32,20 +32,14 @@ const loggedUser = process.client
                     <template v-slot:prepend>
                         <UserIcon stroke-width="1.5" size="20"/>
                     </template>
-                    <v-list-item-title class="pl-4 text-body-1">My Profile</v-list-item-title>
-                </v-list-item>
-                <v-list-item value="item2" active-color="success">
-                    <template v-slot:prepend>
-                        <MailIcon stroke-width="1.5" size="20"/>
-                    </template>
-                    <v-list-item-title  class="pl-4 text-body-1">My Account</v-list-item-title>
+                    <v-list-item-title class="pl-4 text-body-1">My Profile (Soon)</v-list-item-title>
                 </v-list-item>
                 <v-list-item value="item3" active-color="success"> 
                     <template v-slot:prepend>
                         <ListCheckIcon stroke-width="1.5"  size="20"/>
                     </template>
-                    <v-list-item-title class="pl-4 text-body-1">My Task</v-list-item-title>
-                </v-list-item>
+                    <v-list-item-title class="pl-4 text-body-1">My Task (Soon)</v-list-item-title>
+                </v-list-item> 
             </v-list>
             <div class="pt-4 pb-4 px-5 text-center">
                 <v-btn @click="logout" color="dark" variant="outlined" block>Logout</v-btn>
