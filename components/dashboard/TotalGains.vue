@@ -8,13 +8,14 @@ const muted = theme.current.value.colors.muted;
 const isDarkTheme = ref(false);
 const savedTheme = localStorage.getItem("theme") || "DarkTheme";
 isDarkTheme.value = savedTheme === "DarkTheme";
+const loggedUser = JSON.parse(localStorage.getItem('loggedUser') || '{}');
 const Chart = ref([0, 0]);
 const formatCurrency = (amount: number) => {
   return amount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 };
 
 watchEffect(() => {
-  const finances = JSON.parse(localStorage.getItem('finances') || '[]');
+  const finances = JSON.parse(localStorage.getItem('finances') || '[]').filter((item: any) => item.user_id === loggedUser.id);
   let inTotal = 0;
   let outTotal = 0;
 

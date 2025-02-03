@@ -21,7 +21,11 @@ const greetings = [
 const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
 
 useHead({
-  title: "Dashboard - Financial Controller",  // Título da página
+    title: "Dashboard - Financial Controller",  // Título da página
+});
+
+definePageMeta({
+  middleware: 'auth',
 });
 </script>
 
@@ -39,7 +43,7 @@ useHead({
             <v-row>
                 <v-col cols="12" lg="4">
                     <div class="mb-6">
-                        <TotalGains />
+                        <TotalGains /> 
                     </div>
                     <div>
                         <MonthlyFinance />

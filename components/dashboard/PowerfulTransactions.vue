@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { CircleIcon } from 'vue-tabler-icons';
+const loggedUser = JSON.parse(localStorage.getItem('loggedUser') || '{}');
 
 const powerfulTransaction = ref<any[]>([]);
 const formatCurrency = (amount: number) => {
@@ -11,7 +12,7 @@ onMounted(() => {
     const storedData = localStorage.getItem('finances') || '[]';
 
     if (storedData) {
-        const allTransactions = JSON.parse(storedData);
+        const allTransactions = JSON.parse(storedData).filter((item: any) => item.user_id === loggedUser.id);
 
         powerfulTransaction.value = allTransactions
             .sort((a: { amount: number }, b: { amount: number }) => b.amount - a.amount)

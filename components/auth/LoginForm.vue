@@ -37,7 +37,10 @@ const validateAndSubmit = async () => {
         const user = users.find((user: any) => user.email === email.value);
 
         if (user && user.password === password.value) {
-            localStorage.setItem('loggedUser', JSON.stringify(user));
+            const expirationTime = Date.now() + 60 * 60 * 1000; // Expira em 1 hora
+            const loggedUser = { ...user, expirationTime };
+
+            localStorage.setItem('loggedUser', JSON.stringify(loggedUser));
 
             router.push('/dashboard'); // Redirect if the user is found and password matches
         } else {
@@ -48,7 +51,7 @@ const validateAndSubmit = async () => {
 </script>
 
 <template>
-    <v-form ref="formRef" @submit.prevent="validateAndSubmit">
+    <v-form ref="formRef" @submit.prevent="validateAndSubmit" @keypress.enter="validateAndSubmit">
         <v-row class="d-flex mb-3">
             <v-col cols="12">
                 <v-label class="font-weight-bold mb-1">Email</v-label>
@@ -69,7 +72,7 @@ const validateAndSubmit = async () => {
                 </div>
             </v-col>
             <v-col cols="12" class="pt-0">
-                <v-btn @click="validateAndSubmit" color="dark" variant="outlined" size="large" block flat>Sign
+                <v-btn type="submit" color="dark" variant="outlined" size="large" block flat>Sign
                     in</v-btn>
             </v-col>
         </v-row>

@@ -16,6 +16,7 @@ const snackbar = ref(false);
 const isEditing = ref(false);  // Nova variável para determinar se é modo de edição
 const currentId = ref('');  // ID do item que será editado
 const route = useRoute();  // Para acessar os parâmetros da URL
+const loggedUser = JSON.parse(localStorage.getItem('loggedUser') || '{}');
 
 const descriptionRules = (value) => {
     if (!value) return 'Description is required!';
@@ -58,6 +59,7 @@ const submitForm = () => {
                 type: type.value,
                 note: note.value,
                 date: formattedDate.value ? formattedDate.value : new Date().toLocaleDateString('pt-BR'),
+                user_id: loggedUser.id
             };
 
             const existingData = localStorage.getItem('finances');
@@ -94,7 +96,7 @@ onMounted(() => {
     if (idParam) {
         const existingData = localStorage.getItem('finances');
         const allData = existingData ? JSON.parse(existingData) : [];
-        const itemToEdit = allData.find(item => item.id === idParam);
+        const itemToEdit = allData.find(item => item.id === idParam && item.user_id === loggedUser.id);
         if (itemToEdit) {
             description.value = itemToEdit.description;
             amount.value = itemToEdit.amount;
@@ -107,8 +109,11 @@ onMounted(() => {
     }
 
     useHead({
-        title: isEditing.value ? "Editing finance - Finantial Controller" : "Register finance - Finantial Controller",
+  title: isEditing.value ? "Editing finance - Finantial Controller" : "Register finance - Finantial Controller",
     });
+    definePageMeta({
+  middleware: 'auth',
+});
 });
 </script>
 
@@ -136,8 +141,6 @@ onMounted(() => {
                         </v-radio-group>
                         <v-textarea label="Note" v-model="note" rows="4" outlined prepend-inner-icon="mdi-message"
                             maxlength="100"></v-textarea>
-
-
                     </div>
                 </UiParentCard>
             </v-col>

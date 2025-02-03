@@ -3,18 +3,18 @@ import { ref, watchEffect } from 'vue';
 import UiParentCard from '@/components/shared/UiParentCard.vue';
 
 const finances = ref<any[]>([]);
-const filterDialog = ref(false);  
+const filterDialog = ref(false);
 const filters = ref({
     description: '', type: [], startDate: null,
     endDate: null
-}); 
+});
 
 const headers = ref([
     { title: 'Description', key: 'description' },
     { title: 'Date', key: 'date' },
     { title: 'Type', key: 'type' },
     { title: 'Amount', key: 'amount' },
-    { title: 'Actions', key: 'actions' }, 
+    { title: 'Actions', key: 'actions' },
 ]);
 
 const dialog = ref(false);
@@ -24,6 +24,7 @@ const menuStart = ref(false);
 const menuEnd = ref(false);
 const formattedStartDate = ref('');
 const formattedEndDate = ref('');
+const loggedUser = JSON.parse(localStorage.getItem('loggedUser') || '{}');
 
 const onEndDateChange = (date) => {
     if (!date) return '';
@@ -51,9 +52,14 @@ useHead({
     title: "Finances - Finantial Controller",  // Título da página
 });
 
+definePageMeta({
+    middleware: 'auth',
+});
+
 watchEffect(() => {
     const storedData = localStorage.getItem('finances') || '[]';
-    finances.value = JSON.parse(storedData);
+
+    finances.value = JSON.parse(storedData).filter((item: any) => item.user_id === loggedUser.id);
 
     finances.value.forEach((item: any) => {
         const dateParts = item.date.split('/');
@@ -77,7 +83,7 @@ watchEffect(() => {
             item.description.toLowerCase().includes(filters.value.description.toLowerCase())
         );
     }
-    
+
     if (filters.value.type.length > 0) {
         // @ts-ignore
         finances.value = finances.value.filter(item => filters.value.type.includes(item.type));

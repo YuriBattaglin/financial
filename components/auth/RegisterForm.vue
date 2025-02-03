@@ -31,6 +31,10 @@ const passwordRules = (value: string) => {
     return true;
 };
 
+const generateUniqueId = () => {
+    return `id-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+};
+
 const saveUser = () => {
     // Retrieve existing users or initialize an empty array
     const users = JSON.parse(localStorage.getItem('users') || '[]');
@@ -48,6 +52,7 @@ const saveUser = () => {
 
     // Add the new user to the list
     users.push({
+        id: generateUniqueId(),
         name: name.value,
         email: email.value,
         password: password.value
@@ -69,7 +74,7 @@ const validateAndSubmit = async () => {
 </script>
 
 <template>
-    <v-form ref="formRef" @submit.prevent="validateAndSubmit">
+    <v-form ref="formRef" @submit.prevent="validateAndSubmit" @keypress.enter="validateAndSubmit">
         <v-row class="d-flex mb-3">
             <v-col cols="12">
                 <v-label class="font-weight-bold ">Name</v-label>
@@ -88,7 +93,7 @@ const validateAndSubmit = async () => {
                     :rules="[passwordRules]"></v-text-field>
             </v-col>
             <v-col cols="12">
-                <v-btn @click="validateAndSubmit" color="black" variant="outlined" size="large" block flat>
+                <v-btn type="submit" color="black" variant="outlined" size="large" block flat>
                     Sign up
                 </v-btn>
             </v-col>

@@ -2,6 +2,8 @@
 /*-For Set Blank Layout-*/
 definePageMeta({
   layout: "blank",
+  middleware: 'auth'
+
 });
 import { ref, onMounted } from 'vue';
 import { useTheme } from "vuetify";

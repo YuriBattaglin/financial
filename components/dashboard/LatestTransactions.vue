@@ -2,6 +2,8 @@
 import { ref, onMounted } from 'vue';
 
 const latestTransactions = ref<any[]>([]);
+    const loggedUser = JSON.parse(localStorage.getItem('loggedUser') || '{}');
+
 
 const formatCurrency = (amount: number) => {
   return amount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -13,7 +15,7 @@ onMounted(() => {
 
   if (storedData) {
     // Converte os dados em um array
-    const allTransactions = JSON.parse(storedData);
+    const allTransactions = JSON.parse(storedData).filter((item: any) => item.user_id === loggedUser.id);
 
     // Ordena os dados pela data
     latestTransactions.value = allTransactions

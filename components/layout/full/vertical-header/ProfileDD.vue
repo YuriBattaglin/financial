@@ -1,5 +1,12 @@
 <script setup lang="ts">
-const loggedUser = JSON.parse(localStorage.getItem('loggedUser') || '{}');
+import { useAuth } from '~/composables/useAuth';
+
+const { logout } = useAuth();
+
+// Evita erro no lado do servidor
+const loggedUser = process.client
+  ? JSON.parse(localStorage.getItem('loggedUser') || 'null')
+  : null;
 </script>
 
 <template>
@@ -11,7 +18,11 @@ const loggedUser = JSON.parse(localStorage.getItem('loggedUser') || '{}');
             <v-label>{{ loggedUser.name || 'User' }}</v-label>
             <v-btn class="profileBtn custom-hover-success" variant="text" v-bind="props" icon>
                 <v-avatar size="35">
-                    <img src="/images/users/avatar-1.jpg" height="35" alt="user" />
+                    <img 
+                :src="['yuribattaglin@hotmail.com', 'yurinunesbatt@gmail.com', 'yuri@bruningsistemas.com.br'].includes(loggedUser.email) ? '/images/users/avatar-2.jpg' : '/images/users/avatar-1.jpg'" 
+                height="35" 
+                alt="user" 
+            />
                 </v-avatar>
             </v-btn>
         </template>
@@ -37,7 +48,7 @@ const loggedUser = JSON.parse(localStorage.getItem('loggedUser') || '{}');
                 </v-list-item>
             </v-list>
             <div class="pt-4 pb-4 px-5 text-center">
-                <v-btn to="/auth/login" color="dark" variant="outlined" block>Logout</v-btn>
+                <v-btn @click="logout" color="dark" variant="outlined" block>Logout</v-btn>
             </div>
         </v-sheet>
     </v-menu>

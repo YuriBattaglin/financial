@@ -9,9 +9,6 @@ const savedTheme = localStorage.getItem("theme") || "DarkTheme";
 // Aplica o tema salvo
 theme.global.name.value = savedTheme;
 
-// Computed para exibir o nome do tema atual no botão
-const currentTheme = computed(() => theme.global.name.value);
-
 // Função para alternar entre temas
 const toggleTheme = () => {
   const newTheme = theme.global.name.value === "LightTheme" ? "DarkTheme" : "LightTheme";

@@ -6,6 +6,7 @@ const success = theme.current.value.colors.success;
 const isDarkTheme = ref(false);
 const savedTheme = localStorage.getItem("theme") || "DarkTheme"; 
 isDarkTheme.value = savedTheme === "DarkTheme";
+const loggedUser = JSON.parse(localStorage.getItem('loggedUser') || '{}');
 
 /* Variables */
 const totalFinance = ref<number>(0); // Vai armazenar o total de IN - OUT
@@ -19,14 +20,14 @@ const formatCurrency = (amount: number) => {
 /* Get finance data from localStorage */
 watchEffect(() => {
   const storedData = localStorage.getItem('finances') || '[]';
-  const allTransactions = JSON.parse(storedData);
+  const allTransactions = JSON.parse(storedData).filter((item: any) => item.user_id === loggedUser.id);
 
   // Pega o mês e ano atual
   const currentMonth = new Date().getMonth(); // Mês atual (0-11)
   const currentYear = new Date().getFullYear(); // Ano atual
-
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   // Inicializa o array de valores diários com 0s
-  financeByDay.value = Array(31).fill(0); // Supondo que o mês tenha 31 dias
+  financeByDay.value = Array(daysInMonth).fill(0); // Supondo que o mês tenha 31 dias
 
   // Filtra as transações com base no mês e ano
   const filteredTransactions = allTransactions.filter((transaction: any) => {
@@ -54,13 +55,11 @@ watchEffect(() => {
 
 // Opções do gráfico de área
 const areachartOptions = computed(() => {
-   const today = new Date();
-  const currentYear = today.getFullYear();
-  const currentMonth = today.getMonth(); 
+  const currentMonth = new Date().getMonth(); // Mês atual (0-11)
+  const currentYear = new Date().getFullYear(); // Ano atual
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   return {
-
-    labels: Array.from({ length: daysInMonth }, (_, i) => (i + 1).toString()), // Define os dias exatos do mês
+    labels: Array.from({ length: daysInMonth }, (_, i) => (i + 1).toString()), //
     chart: {
       type: "area",
       height: 60,

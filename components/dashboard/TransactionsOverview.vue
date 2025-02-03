@@ -17,23 +17,39 @@ const getMonthYearFromDate = (date: string) => {
 
 const loadAvailableMonths = () => {
   const storedData = localStorage.getItem("finances") || "[]";
-  const allTransactions: { date: string }[] = JSON.parse(storedData); 
+  const allTransactions: { date: string }[] = JSON.parse(storedData).filter((item: any) => item.user_id === loggedUser.id);;
 
+  // Obter todos os meses e anos únicos
   const uniqueMonths = Array.from(
     new Set(allTransactions.map(transaction => getMonthYearFromDate(transaction.date)))
   );
 
+  // Ordenar os meses com base no mês (utilizando o mêsMap)
   uniqueMonths.sort((a, b) => {
     const [monthA, yearA] = a.split(" ");
     const [monthB, yearB] = b.split(" ");
-    return new Date(`${monthA} 1, ${yearA}`).getTime() - new Date(`${monthB} 1, ${yearB}`).getTime();
+    
+    // Converter os nomes dos meses para índices numéricos usando o mêsMap
+    const monthIndexA = monthMap[monthA.toLowerCase()];
+    const monthIndexB = monthMap[monthB.toLowerCase()];
+
+    // Comparar ano primeiro e depois mês
+    if (yearA === yearB) {
+      return monthIndexA - monthIndexB; // Ordenar por mês
+    } else {
+      return parseInt(yearA) - parseInt(yearB); // Ordenar por ano
+    }
   });
 
+  // Atualizar os itens disponíveis no select
   items.value = uniqueMonths;
 
+  // Adicionar o mês atual, se não estiver na lista
   if (!items.value.includes(getCurrentMonthYear())) {
     items.value.push(getCurrentMonthYear());
   }
+  
+  // Definir o mês atual como selecionado
   select.value = getCurrentMonthYear();
 };
 
@@ -52,10 +68,11 @@ const categories = computed(() => {
 
   return Array.from({ length: daysInMonth }, (_, i) => `${i + 1}`);
 });
+const loggedUser = JSON.parse(localStorage.getItem('loggedUser') || '{}');
 
 const filterTransactionsByMonth = (monthYear: string) => {
   const storedData = localStorage.getItem('finances') || '[]';
-  const allTransactions = JSON.parse(storedData);
+  const allTransactions = JSON.parse(storedData).filter((item: any) => item.user_id === loggedUser.id);
 
   return allTransactions.filter((transaction: any) => {
     const transactionMonthYear = getMonthYearFromDate(transaction.date);
