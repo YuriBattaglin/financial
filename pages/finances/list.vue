@@ -187,7 +187,22 @@ const openFilter = () => {
                     </template>
 
                 </v-data-table>
+
             </UiParentCard>
+
+
+        </v-col>
+    </v-row>
+
+    <v-row v-if="finances.length === 0">
+        <v-col cols="12" md="12">
+            <div class="d-flex justify-center align-center text-center">
+                No finances to show. Click on the
+                <v-btn icon variant="tonal" class="ms-1 mr-1" color="success">
+                    <v-icon>mdi-plus</v-icon>
+                </v-btn>
+                button at the bottom right to add.
+            </div>
         </v-col>
     </v-row>
 
