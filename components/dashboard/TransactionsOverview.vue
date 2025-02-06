@@ -1,13 +1,7 @@
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { useTheme } from "vuetify";
-
-const getCurrentMonthYear = () => {
-  const now = new Date();
-  const month = now.toLocaleString("en-Us", { month: "long" });
-  const year = now.getFullYear();
-  return `${month} ${year}`;
-};
+const props = defineProps<{ selectedMonth: string }>(); 
 
 const getMonthYearFromDate = (date: string) => {
   const [day, month, year] = date.split("/");
@@ -15,64 +9,52 @@ const getMonthYearFromDate = (date: string) => {
   return `${monthName} ${year}`;
 };
 
-const loadAvailableMonths = () => {
-  const storedData = localStorage.getItem("finances") || "[]";
-  const allTransactions: { date: string }[] = JSON.parse(storedData).filter((item: any) => item.user_id === loggedUser.id);;
-
-  // Obter todos os meses e anos únicos
-  const uniqueMonths = Array.from(
-    new Set(allTransactions.map(transaction => getMonthYearFromDate(transaction.date)))
-  );
-
-  // Ordenar os meses com base no mês (utilizando o mêsMap)
-  uniqueMonths.sort((a, b) => {
-    const [monthA, yearA] = a.split(" ");
-    const [monthB, yearB] = b.split(" ");
-    
-    // Converter os nomes dos meses para índices numéricos usando o mêsMap
-    const monthIndexA = monthMap[monthA.toLowerCase()];
-    const monthIndexB = monthMap[monthB.toLowerCase()];
-
-    // Comparar ano primeiro e depois mês
-    if (yearA === yearB) {
-      return monthIndexA - monthIndexB; // Ordenar por mês
-    } else {
-      return parseInt(yearA) - parseInt(yearB); // Ordenar por ano
-    }
-  });
-
-  // Atualizar os itens disponíveis no select
-  items.value = uniqueMonths;
-
-  // Adicionar o mês atual, se não estiver na lista
-  if (!items.value.includes(getCurrentMonthYear())) {
-    items.value.push(getCurrentMonthYear());
-  }
-  
-  // Definir o mês atual como selecionado
-  select.value = getCurrentMonthYear();
-};
-
 const monthMap: { [key: string]: number } = {
   "january": 0, "february": 1, "march": 2, "april": 3, "may": 4, "june": 5,
   "july": 6, "august": 7, "september": 8, "october": 9, "november": 10, "december": 11
 };
 
+const loggedUser = ref(JSON.parse(localStorage.getItem("loggedUser") || "{}"));
+
+const loadAvailableMonths = () => {
+  const storedData = localStorage.getItem("finances") || "[]";
+  const allTransactions: { date: string }[] = JSON.parse(storedData).filter((item: any) => item.user_id === loggedUser.value.id);
+
+  const uniqueMonths = Array.from(
+    new Set(allTransactions.map(transaction => getMonthYearFromDate(transaction.date)))
+  );
+
+  uniqueMonths.sort((a, b) => {
+    const [monthA, yearA] = a.split(" ");
+    const [monthB, yearB] = b.split(" ");
+
+    const monthIndexA = monthMap[monthA.toLowerCase()];
+    const monthIndexB = monthMap[monthB.toLowerCase()];
+
+    if (yearA === yearB) {
+      return monthIndexA - monthIndexB;
+    } else {
+      return parseInt(yearA) - parseInt(yearB);
+    }
+  });
+
+  return uniqueMonths;
+};
+
 const categories = computed(() => {
-  const [monthName, year] = select.value.split(" ");
-  const monthIndex = monthMap[monthName.toLowerCase()]; 
+  if (!props.selectedMonth) return [];
 
-  if (monthIndex === undefined) return []; 
+  const [monthName, year] = props.selectedMonth.split(" ");
+  const monthIndex = monthMap[monthName.toLowerCase()];
+  if (monthIndex === undefined) return [];
 
-  const daysInMonth = new Date(parseInt(year), monthIndex + 1, 0).getDate(); 
-
+  const daysInMonth = new Date(parseInt(year), monthIndex + 1, 0).getDate();
   return Array.from({ length: daysInMonth }, (_, i) => `${i + 1}`);
 });
-const loggedUser = JSON.parse(localStorage.getItem('loggedUser') || '{}');
 
 const filterTransactionsByMonth = (monthYear: string) => {
-  const storedData = localStorage.getItem('finances') || '[]';
-  const allTransactions = JSON.parse(storedData).filter((item: any) => item.user_id === loggedUser.id);
+  const storedData = localStorage.getItem("finances") || "[]";
+  const allTransactions = JSON.parse(storedData).filter((item: any) => item.user_id === loggedUser.value.id);
 
   return allTransactions.filter((transaction: any) => {
     const transactionMonthYear = getMonthYearFromDate(transaction.date);
@@ -81,14 +63,12 @@ const filterTransactionsByMonth = (monthYear: string) => {
 };
 
 const formatDate = (dateString: string) => {
-  const dateParts = dateString.split('/');  
+  const dateParts = dateString.split('/');
   if (dateParts.length === 3) {
-    const year = '20' + dateParts[2];  
-    const month = dateParts[1];
-    const day = dateParts[0];
-    return `${year}-${month}-${day}`;  
+    const year = dateParts[2].length === 2 ? '20' + dateParts[2] : dateParts[2];
+    return `${year}-${dateParts[1]}-${dateParts[0]}`;
   }
-  return dateString;  
+  return dateString;
 };
 
 const getChartDataForMonth = (monthYear: string) => {
@@ -96,10 +76,13 @@ const getChartDataForMonth = (monthYear: string) => {
   const dailyEarnings: number[] = [];
   const dailyExpenses: number[] = [];
 
-  const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
+  const [monthName, year] = monthYear.split(" ");
+  const monthIndex = monthMap[monthName.toLowerCase()];
+  const daysInMonth = new Date(parseInt(year), monthIndex + 1, 0).getDate();
+
   for (let i = 1; i <= daysInMonth; i++) {
-    const earningsForDay = filteredTransactions.filter((t: any) =>  new Date(formatDate(t.date)).getDate() === i && t.type === 'I');
-    const expensesForDay = filteredTransactions.filter((t: any) =>  new Date(formatDate(t.date)).getDate() === i && t.type === 'O');
+    const earningsForDay = filteredTransactions.filter((t: any) => new Date(formatDate(t.date)).getDate() === i && t.type === "I");
+    const expensesForDay = filteredTransactions.filter((t: any) => new Date(formatDate(t.date)).getDate() === i && t.type === "O");
 
     dailyEarnings.push(earningsForDay.reduce((sum: number, t: any) => sum + parseFloat(t.amount), 0));
     dailyExpenses.push(expensesForDay.reduce((sum: number, t: any) => sum + parseFloat(t.amount), 0));
@@ -111,99 +94,35 @@ const getChartDataForMonth = (monthYear: string) => {
 const theme = useTheme();
 const muted = theme.current.value.colors.muted;
 const success = theme.current.value.colors.success;
-const select = ref(getCurrentMonthYear());
-const items = ref<string[]>([]);
-const chartData = ref(getChartDataForMonth(select.value));
-const isDarkTheme = ref(false);
-const savedTheme = localStorage.getItem("theme") || "DarkTheme";
-isDarkTheme.value = savedTheme === "DarkTheme";
+const chartData = ref(getChartDataForMonth(props.selectedMonth));
+const isDarkTheme = ref(localStorage.getItem("theme") === "DarkTheme");
 
 const chartOptions = computed(() => {
   const maxEarnings = Math.max(...chartData.value.dailyEarnings, 0);
   const maxExpenses = Math.max(...chartData.value.dailyExpenses, 0);
-  const maxValue = Math.max(maxEarnings, maxExpenses);
+  const maxValue = Math.max(maxEarnings, maxExpenses) || 10;
 
   return {
     series: [
-      {
-        name: "Earnings this day:",
-        data: chartData.value.dailyEarnings,
-      },
-      {
-        name: "Expense this day:",
-        data: chartData.value.dailyExpenses,
-      },
+      { name: "Earnings this day:", data: chartData.value.dailyEarnings },
+      { name: "Expense this day:", data: chartData.value.dailyExpenses },
     ],
     chartOptions: {
-      grid: {
-        borderColor: "rgba(0,0,0,0.1)",
-        strokeDashArray: 3,
-        xaxis: {
-          lines: {
-            show: false,
-          },
-        },
-      },
-      plotOptions: {
-        bar: { horizontal: false, columnWidth: "35%", borderRadius: [8] },
-      },
+      grid: { borderColor: "rgba(0,0,0,0.1)", strokeDashArray: 3 },
+      plotOptions: { bar: { horizontal: false, columnWidth: "35%", borderRadius: [8] } },
       colors: [success, muted],
-      chart: {
-        type: "bar",
-        height: 370,
-        offsetX: -15,
-        toolbar: { show: false },
-        foreColor: "#adb0bb",
-        fontFamily: "inherit",
-        sparkline: { enabled: false },
-      },
+      chart: { type: "bar", height: 370, toolbar: { show: false } },
       dataLabels: { enabled: false },
-      markers: { size: 0 },
-      legend: { show: false },
-      xaxis: {
-        type: "category",
-        categories: categories.value,
-        labels: {
-          style: { cssClass: "grey--text lighten-2--text fill-color" },
-        },
-      },
-      yaxis: {
-        show: true,
-        min: 0,
-        max: maxValue + 2,
-        tickAmount: 4,
-        labels: {
-          style: {
-            cssClass: "grey--text lighten-2--text fill-color",
-          },
-        },
-      },
-      stroke: {
-        show: true,
-        width: 10,
-        lineCap: "butt",
-        colors: ["transparent"],
-      },
+      xaxis: { type: "category", categories: categories.value },
+      yaxis: { min: 0, max: maxValue + 2, tickAmount: 4 },
       tooltip: { theme: isDarkTheme.value ? "dark" : "light" },
-      responsive: [
-        {
-          breakpoint: 600,
-          options: {
-            plotOptions: {
-              bar: {
-                borderRadius: 3,
-              },
-            },
-          },
-        },
-      ],
     },
   };
 });
 
-watch(select, (newMonthYear) => {
+watch(() => props.selectedMonth, (newMonthYear) => {
   chartData.value = getChartDataForMonth(newMonthYear);
-});
+}, { immediate: true });
 
 onMounted(loadAvailableMonths);
 </script>
@@ -212,14 +131,10 @@ onMounted(loadAvailableMonths);
   <v-card elevation="10" class="withbg">
     <v-card-item>
       <div class="d-sm-flex align-center justify-space-between pt-sm-2">
-        <div><v-card-title class="text-h5">Overview</v-card-title></div>
-        <div class="my-sm-0 my-2">
-          <v-select v-model="select" :items="items" variant="outlined" density="compact" hide-details></v-select>
-        </div>
+        <v-card-title class="text-h5">Overview</v-card-title>
       </div>
       <div class="mt-6">
-        <apexchart type="bar" height="370px" :options="chartOptions.chartOptions" :series="chartOptions.series">
-        </apexchart>
+        <apexchart type="bar" height="370px" :options="chartOptions.chartOptions" :series="chartOptions.series"></apexchart>
       </div>
     </v-card-item>
   </v-card>

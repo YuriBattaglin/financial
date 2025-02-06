@@ -1,7 +1,7 @@
 import {
     CurrencyDollarIcon,
-    LayoutDashboardIcon, LogoutIcon,
-    ZoomMoneyIcon
+    LayoutDashboardIcon,
+    UsersGroupIcon,
 } from 'vue-tabler-icons';
 
 export interface menu {
@@ -13,7 +13,7 @@ export interface menu {
     chipColor?: string;
     chipVariant?: string;
     chipIcon?: string;
-    children?: menu[];
+    children?: menu[];  
     disabled?: boolean;
     type?: string;
     subCaption?: string;
@@ -26,17 +26,29 @@ const sidebarItem: menu[] = [
         icon: LayoutDashboardIcon,
         to: '/dashboard'
     },
-    { header: 'Functions' },
+    { header: 'Financial' },
     {
         title: 'Finances',
         icon: CurrencyDollarIcon,
-        to: '/finances/list'
+        to: '/finances/list',
+        //children: [
+        //    {
+        //        title: 'List',
+        //        to: '/finances/list',
+        //    }
+        //]
     },
-    { header: 'More' },
+    { header: 'Register' },
     {
-        title: 'Logout',
-        icon: LogoutIcon,
-        to: '/auth/login'
+        title: 'Groups',
+        icon: UsersGroupIcon,
+        to: '/groups/list',
+        //children: [
+        //    {
+        //        title: 'List',
+        //        to: '/finances/list',
+        //    }
+        //]
     },
 ];
 

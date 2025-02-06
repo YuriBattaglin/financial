@@ -9,6 +9,7 @@ const description = ref('');
 const amount = ref<number | null>(null);
 const type = ref('I');
 const note = ref('');
+const group = ref(null);
 const selectedDate = ref(null);
 const formattedDate = ref('');
 const menu = ref(false);
@@ -17,6 +18,8 @@ const isEditing = ref(false);  // Nova variável para determinar se é modo de e
 const currentId = ref('');  // ID do item que será editado
 const route = useRoute();  // Para acessar os parâmetros da URL
 const loggedUser = JSON.parse(localStorage.getItem('loggedUser') || '{}');
+const groups = ref([]);
+
 
 const descriptionRules = (value) => {
     if (!value) return 'Description is required!';
@@ -46,8 +49,6 @@ const generateUniqueId = () => {
 
 const submitForm = () => {
     try {
-
-
         const descriptionValid = descriptionRules(description.value) === true;
         const amountValid = amountRules(amount.value) === true;
 
@@ -55,6 +56,7 @@ const submitForm = () => {
             const formData = {
                 id: isEditing.value ? currentId.value : generateUniqueId(),
                 description: description.value,
+                group_id: group.value,
                 amount: amount.value,
                 type: type.value,
                 note: note.value,
@@ -92,6 +94,17 @@ const submitForm = () => {
 };
 
 onMounted(() => {
+
+    try {
+        const storedGroups = JSON.parse(localStorage.getItem('groups') || '[]');
+        groups.value = storedGroups.map(group => ({
+            title: group.description, // O que será exibido no select
+            value: group.id, // O valor real que será enviado no submit
+        }));
+    } catch (error) {
+        console.error('Erro ao carregar grupos:', error);
+    }
+
     const idParam = route.query.id as string;  // Pega o ID da URL
     if (idParam) {
         const existingData = localStorage.getItem('finances');
@@ -99,6 +112,7 @@ onMounted(() => {
         const itemToEdit = allData.find(item => item.id === idParam && item.user_id === loggedUser.id);
         if (itemToEdit) {
             description.value = itemToEdit.description;
+            group.value = itemToEdit.group_id;
             amount.value = itemToEdit.amount;
             type.value = itemToEdit.type;
             note.value = itemToEdit.note;
@@ -109,11 +123,11 @@ onMounted(() => {
     }
 
     useHead({
-  title: isEditing.value ? "Editing finance - Finantial Controller" : "Register finance - Finantial Controller",
+        title: isEditing.value ? "Editing finance - Finantial Controller" : "Registering finance - Finantial Controller",
     });
     definePageMeta({
-  middleware: 'auth',
-});
+        middleware: 'auth',
+    });
 });
 </script>
 
@@ -126,9 +140,16 @@ onMounted(() => {
                     <div class="pa-7 pt-1 flex-grow-1">
                         <v-text-field v-model="description" maxlength="25" label="Description"
                             :rules="[descriptionRules]" required></v-text-field>
-                        <v-text-field v-model="amount" :rules="[amountRules]" label="Amount" type="number"
-                            required></v-text-field>
-                        <v-menu v-model="menu" :close-on-content-click="false" >
+                        <v-row>
+                            <v-col cols="6">
+                                <v-text-field v-model="amount" :rules="[amountRules]" label="Amount" type="number"
+                                    required></v-text-field>
+                            </v-col>
+                            <v-col cols="6">
+                                <v-select v-model="group" label="Group" :items="groups" item-title="title" item-value="value" required></v-select>
+                            </v-col>
+                        </v-row>
+                        <v-menu v-model="menu" :close-on-content-click="false">
                             <template v-slot:activator="{ props }">
                                 <v-text-field v-model="formattedDate" label="Select Date"
                                     prepend-inner-icon="mdi-calendar" readonly v-bind="props" />

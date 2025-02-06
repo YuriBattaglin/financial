@@ -10,8 +10,9 @@ const filters = ref({
 });
 
 const headers = ref([
-    { title: 'Description', key: 'description' },
-    { title: 'Date', key: 'date' },
+{ title: 'Description', key: 'description' },
+{ title: 'Group', key: 'group_description' },
+{ title: 'Date', key: 'date' },
     { title: 'Type', key: 'type' },
     { title: 'Amount', key: 'amount' },
     { title: 'Actions', key: 'actions' },
@@ -57,11 +58,16 @@ definePageMeta({
 });
 
 watchEffect(() => {
+    const storedGroups = localStorage.getItem('groups') || '[]'; 
     const storedData = localStorage.getItem('finances') || '[]';
-
+    const groups = JSON.parse(storedGroups); 
     finances.value = JSON.parse(storedData).filter((item: any) => item.user_id === loggedUser.id);
 
     finances.value.forEach((item: any) => {
+        const group = groups.find((group: any) => group.value === item.group_id);
+        if (group) {
+            item.group_description = group.description; 
+        }
         const dateParts = item.date.split('/');
         if (dateParts.length === 3) {
             item.date = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
@@ -149,13 +155,13 @@ const openFilter = () => {
 
 <template>
     <v-snackbar v-model="snackbar" @click="snackbar = false" timeout="3000" color="success" location="top right"
-        elevation="12" variant="elevated" height="80px" min-height="60px" transition="slide-x-reverse-transition">
-        <v-icon left size="30">mdi-check</v-icon>
-        <h3
-            style="margin: 0; font-size: 16px; font-weight: bold; color: white; display: inline-block; margin-left: 10px;">
-            Data deleted successfully!
-        </h3>
-    </v-snackbar>
+            elevation="12" variant="elevated" height="80px" min-height="60px" transition="slide-x-reverse-transition">
+            <v-icon left size="30">mdi-check</v-icon>
+            <h3
+                style="margin: 0; font-size: 16px; font-weight: bold; color: white; display: inline-block; margin-left: 10px;">
+                Data sent successfully!
+            </h3>
+        </v-snackbar>
 
     <v-row>
         <v-col cols="12" md="12">
