@@ -105,7 +105,7 @@ const chartOptions = computed(() => {
   return {
     series: [
       { name: "Earnings this day:", data: chartData.value.dailyEarnings },
-      { name: "Expense this day:", data: chartData.value.dailyExpenses },
+      { name: "Expenses this day:", data: chartData.value.dailyExpenses },
     ],
     chartOptions: {
       grid: { borderColor: "rgba(0,0,0,0.1)", strokeDashArray: 3 },
