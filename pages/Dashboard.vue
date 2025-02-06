@@ -121,14 +121,10 @@ onMounted(loadAvailableMonths);
             <v-btn @click="goToPage(currentPage - 1)" :disabled="currentPage <= 0" icon>
                 <v-icon>mdi-chevron-left</v-icon>
             </v-btn>
-        </v-col>
-        <v-col cols="auto" v-if="groups.length > 0">
             <v-btn v-for="(group, index) in paginatedGroups" :key="index" :icon="true">
                 <v-icon v-if="group.icon" :icon="group.icon"></v-icon>
                 <v-icon v-else>mdi-lightbulb-question</v-icon>
             </v-btn>
-        </v-col>
-        <v-col cols="auto" v-if="groups.length > 0">
             <v-btn @click="goToPage(currentPage + 1)" :disabled="currentPage >= totalPages - 1" icon>
                 <v-icon>mdi-chevron-right</v-icon>
             </v-btn>
@@ -137,6 +133,8 @@ onMounted(loadAvailableMonths);
             <v-select v-model="select" :items="items" variant="outlined" density="compact" class="ml-3"
                 hide-details></v-select>
         </v-col>
+    </v-row>
+    <v-row>
         <v-col cols="12">
             <v-row>
                 <v-col cols="12" lg="4">
