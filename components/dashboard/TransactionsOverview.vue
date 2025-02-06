@@ -109,7 +109,7 @@ const chartOptions = computed(() => {
     ],
     chartOptions: {
       grid: { borderColor: "rgba(0,0,0,0.1)", strokeDashArray: 3 },
-      plotOptions: { bar: { horizontal: false, columnWidth: "35%", borderRadius: [8] } },
+      plotOptions: { bar: { horizontal: true, columnWidth: "35%", borderRadius: [8] } },
       colors: [success, muted],
       chart: { type: "bar", height: 370, toolbar: { show: false } },
       dataLabels: { enabled: false },
