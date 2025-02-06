@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from "vue";
 import { useTheme } from "vuetify";
-const props = defineProps<{ selectedMonth: string }>(); 
+const props = defineProps<{ selectedMonth: string, selectedGroup: any }>(); // Recebe o mês selecionado como prop
 
 const getMonthYearFromDate = (date: string) => {
   const [day, month, year] = date.split("/");
@@ -58,7 +58,10 @@ const filterTransactionsByMonth = (monthYear: string) => {
 
   return allTransactions.filter((transaction: any) => {
     const transactionMonthYear = getMonthYearFromDate(transaction.date);
-    return transactionMonthYear === monthYear;
+    const matchesMonth = transactionMonthYear === monthYear;
+    const matchesGroup = !props.selectedGroup || transaction.group_id === props.selectedGroup.id;
+
+    return matchesMonth && matchesGroup;
   });
 };
 
@@ -120,9 +123,13 @@ const chartOptions = computed(() => {
   };
 });
 
-watch(() => props.selectedMonth, (newMonthYear) => {
-  chartData.value = getChartDataForMonth(newMonthYear);
-}, { immediate: true });
+watch(
+  [() => props.selectedMonth, () => props.selectedGroup],
+  ([newMonthYear]) => {
+    chartData.value = getChartDataForMonth(newMonthYear);
+  },
+  { immediate: true }
+);
 
 onMounted(loadAvailableMonths);
 </script>
@@ -134,7 +141,8 @@ onMounted(loadAvailableMonths);
         <v-card-title class="text-h5">Overview</v-card-title>
       </div>
       <div class="mt-6">
-        <apexchart type="bar" height="370px" :options="chartOptions.chartOptions" :series="chartOptions.series"></apexchart>
+        <apexchart type="bar" height="370px" :options="chartOptions.chartOptions" :series="chartOptions.series">
+        </apexchart>
       </div>
     </v-card-item>
   </v-card>

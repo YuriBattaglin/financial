@@ -19,6 +19,14 @@ const getMonthYearFromDate = (date: string) => {
     return `${monthName} ${year}`;
 };
 
+const handleClick = (group) => {
+    if(selectedGroup.value === group){
+        selectedGroup.value = null;
+    }else{
+        selectedGroup.value = group;
+    }
+};
+
 const loadAvailableMonths = () => {
     const storedData = localStorage.getItem("finances") || "[]";
     const allTransactions: { date: string }[] = JSON.parse(storedData).filter((item: any) => item.user_id === loggedUser.id);;
@@ -59,6 +67,7 @@ const loadAvailableMonths = () => {
 
 const loggedUser = JSON.parse(localStorage.getItem('loggedUser') || '{}');
 const select = ref(getCurrentMonthYear());
+const selectedGroup = ref(<any>null);
 const items = ref<string[]>([]);
 const groupsData = localStorage.getItem('groups') || '[]';
 const groups = ref<any[]>(JSON.parse(groupsData)); // Aqui, `groups` vai armazenar os dados dos grupos
@@ -121,7 +130,9 @@ onMounted(loadAvailableMonths);
             <v-btn @click="goToPage(currentPage - 1)" :disabled="currentPage <= 0" icon>
                 <v-icon>mdi-chevron-left</v-icon>
             </v-btn>
-            <v-btn v-for="(group, index) in paginatedGroups" :key="index" :icon="true">
+            <v-btn v-for="(group, index) in paginatedGroups" :key="index" icon @click="handleClick(group)" class="mx-1"
+            :class="{ 'v-btn--active': selectedGroup === group }"
+            >
                 <v-icon v-if="group.icon" :icon="group.icon"></v-icon>
                 <v-icon v-else>mdi-lightbulb-question</v-icon>
             </v-btn>
@@ -134,19 +145,27 @@ onMounted(loadAvailableMonths);
                 hide-details></v-select>
         </v-col>
     </v-row>
+    <v-row v-if="selectedGroup">
+    <span class="text-subtitle-1 font-weight-bold ms-3">
+          {{ 'Showing by group:' }}
+          <span class="text-subtitle-1 text-muted ms-1">
+            {{ selectedGroup.description }}
+          </span>
+        </span>
+    </v-row>
     <v-row>
         <v-col cols="12">
             <v-row>
                 <v-col cols="12" lg="4">
                     <div class="mb-6">
-                        <TotalGains />
+                        <MonthlyFinance :selectedMonth="select" :selectedGroup="selectedGroup" />
                     </div>
                     <div>
-                        <MonthlyFinance :selectedMonth="select" />
+                        <TotalGains />
                     </div>
                 </v-col>
                 <v-col cols="12" lg="8">
-                    <TransactionsOverview :selectedMonth="select" />
+                    <TransactionsOverview :selectedMonth="select" :selectedGroup="selectedGroup" />
                 </v-col>
 
                 <v-col cols="12" lg="8">

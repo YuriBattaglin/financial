@@ -4,10 +4,10 @@ import { useTheme } from "vuetify";
 const theme = useTheme();
 const success = theme.current.value.colors.success;
 const isDarkTheme = ref(false);
-const savedTheme = localStorage.getItem("theme") || "DarkTheme"; 
+const savedTheme = localStorage.getItem("theme") || "DarkTheme";
 isDarkTheme.value = savedTheme === "DarkTheme";
 const loggedUser = JSON.parse(localStorage.getItem('loggedUser') || '{}');
-const props = defineProps<{ selectedMonth: string }>(); // Recebe o mês selecionado como prop
+const props = defineProps<{ selectedMonth: string, selectedGroup: any }>(); // Recebe o mês selecionado como prop
 
 /* Variables */
 const totalFinance = ref<number>(0); // Vai armazenar o total de IN - OUT
@@ -40,7 +40,10 @@ watchEffect(() => {
       parseInt(transactionDateParts[0]) // Dia
     );
 
-    return transactionDate.getMonth() === monthIndex && transactionDate.getFullYear() === selectedYear;
+    if (!props.selectedGroup) {
+      return transactionDate.getMonth() === monthIndex && transactionDate.getFullYear() === selectedYear;
+    }
+    return transactionDate.getMonth() === monthIndex && transactionDate.getFullYear() === selectedYear && transaction.group_id === props.selectedGroup?.id;
   });
 
   // Calcula o total de "IN" e "OUT" e popula `financeByDay`
@@ -95,7 +98,7 @@ const areaChart = computed(() => {
     series: [
       {
         name: "",
-        data: financeByDay.value, 
+        data: financeByDay.value,
       },
     ],
   };
@@ -127,7 +130,7 @@ const areaChart = computed(() => {
               }" size="25">
 
                 <template v-if="totalFinance === 0">
-                  <v-icon size="20">mdi-circle-outline</v-icon> 
+                  <v-icon size="20">mdi-circle-outline</v-icon>
                 </template>
                 <template v-else-if="totalFinance > 0">
                   <ArrowUpLeftIcon size="20" />
