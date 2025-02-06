@@ -128,7 +128,7 @@ onMounted(() => {
                 <UiParentCard title="Register group">
                     <div class="pa-7 pt-1 flex-grow-1">
                         <v-text-field v-model="description" maxlength="25" label="Description"
-                            :rules="[descriptionRules]" required :prepend-inner-icon="selectedIcon" />
+                            :rules="[descriptionRules]" required :prepend-icon="selectedIcon" />
 
                         <v-label class="font-weight-bold">Group Icon:</v-label> <!-- Melhorado com estilo -->
                         <v-row justify="space-evenly mt-2">
