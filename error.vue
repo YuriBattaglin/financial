@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-// Página de título
 const title = ref("404-Page Not Found");
 useHead({
   meta: [{ content: title }],

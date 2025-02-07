@@ -10,17 +10,13 @@ const formatCurrency = (amount: number) => {
 };
 
 onMounted(() => {
-  // Recupera os dados do localStorage
   const storedData = localStorage.getItem('finances') || '[]';
 
   if (storedData) {
-    // Converte os dados em um array
     const allTransactions = JSON.parse(storedData).filter((item: any) => item.user_id === loggedUser.id);
 
-    // Ordena os dados pela data
     latestTransactions.value = allTransactions
       .sort((a: { date: string }, b: { date: string }) => {
-        // Converte a data de 'DD/MM/YYYY' para o formato 'YYYY-MM-DD' para que o JavaScript possa interpretar
         const parseDate = (dateStr: string) => {
           const [day, month, year] = dateStr.split('/');
           return new Date(`${year}-${month}-${day}`);
@@ -28,9 +24,9 @@ onMounted(() => {
 
         const dateA = parseDate(a.date);
         const dateB = parseDate(b.date);
-        return dateB.getTime() - dateA.getTime(); // Ordem decrescente (mais recente primeiro)
+        return dateB.getTime() - dateA.getTime(); 
       })
-      .slice(0, 4); // Pegando apenas os 4 primeiros
+      .slice(0, 4); 
   } else {
     latestTransactions.value = [];
   }

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 definePageMeta({
-  layout: false, // Se precisar de um layout diferente
+  layout: false, 
 });
 
 navigateTo("/auth/login", { replace: true });

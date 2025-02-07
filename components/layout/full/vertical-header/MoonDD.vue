@@ -5,11 +5,8 @@ import { ref, computed, watch } from "vue";
 
 const theme = useTheme();
 const savedTheme = localStorage.getItem("theme") || "DarkTheme";
-
-// Aplica o tema salvo
 theme.global.name.value = savedTheme;
 
-// Função para alternar entre temas
 const toggleTheme = () => {
   const newTheme = theme.global.name.value === "LightTheme" ? "DarkTheme" : "LightTheme";
   theme.global.name.value = newTheme;

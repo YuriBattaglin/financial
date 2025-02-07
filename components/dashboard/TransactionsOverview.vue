@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from "vue";
 import { useTheme } from "vuetify";
-const props = defineProps<{ selectedMonth: string, selectedGroup: any }>(); // Recebe o mês selecionado como prop
+const props = defineProps<{ selectedMonth: string, selectedGroup: any }>(); 
 
 const getMonthYearFromDate = (date: string) => {
   const [day, month, year] = date.split("/");

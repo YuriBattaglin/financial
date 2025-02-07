@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';  // Importa useRoute e useRouter
+import { useRoute } from 'vue-router';  
 import UiParentCard from '@/components/shared/UiParentCard.vue';
 
-// Definição das variáveis reativas
 const form = ref<HTMLFormElement | null>(null);
 const description = ref('');
 const amount = ref<number | null>(null);
@@ -13,13 +12,12 @@ const group = ref(null);
 const selectedDate = ref(null);
 const formattedDate = ref('');
 const menu = ref(false);
-const snackbar = ref(false);
-const isEditing = ref(false);  // Nova variável para determinar se é modo de edição
-const currentId = ref('');  // ID do item que será editado
-const route = useRoute();  // Para acessar os parâmetros da URL
+const isEditing = ref(false);  
+const currentId = ref(''); 
+const route = useRoute();  
 const loggedUser = JSON.parse(localStorage.getItem('loggedUser') || '{}');
 const groups = ref([]);
-
+const Snackbar = inject('Snackbar') as (msg: string, type?: string) => void;
 
 const descriptionRules = (value) => {
     if (!value) return 'Description is required!';
@@ -77,7 +75,7 @@ const submitForm = () => {
             }
 
             localStorage.setItem('finances', JSON.stringify(allData));
-            snackbar.value = true;
+            Snackbar('Data sent successfully!', 'success');
 
             form.value?.reset();
             description.value = '';
@@ -85,9 +83,7 @@ const submitForm = () => {
             type.value = 'I';
             note.value = '';
             formattedDate.value = '';
-            if (isEditing.value) {
-                navigateTo('/finances/list', { replace: true });
-            };
+            navigateTo('/finances/list', { replace: true });
         }
     } catch (error) {
     }
@@ -98,14 +94,14 @@ onMounted(() => {
     try {
         const storedGroups = JSON.parse(localStorage.getItem('groups') || '[]');
         groups.value = storedGroups.map(group => ({
-            title: group.description, // O que será exibido no select
-            value: group.id, // O valor real que será enviado no submit
+            title: group.description, 
+            value: group.id, 
         }));
     } catch (error) {
         console.error('Erro ao carregar grupos:', error);
     }
 
-    const idParam = route.query.id as string;  // Pega o ID da URL
+    const idParam = route.query.id as string;  
     if (idParam) {
         const existingData = localStorage.getItem('finances');
         const allData = existingData ? JSON.parse(existingData) : [];
@@ -118,10 +114,9 @@ onMounted(() => {
             note.value = itemToEdit.note;
             formattedDate.value = itemToEdit.date;
             currentId.value = idParam;
-            isEditing.value = true;  // Muda para modo de edição
+            isEditing.value = true;  
         }
     }
-
     useHead({
         title: isEditing.value ? "Editing finance - Finantial Controller" : "Registering finance - Finantial Controller",
     });
@@ -146,7 +141,8 @@ onMounted(() => {
                                     required></v-text-field>
                             </v-col>
                             <v-col cols="6">
-                                <v-select v-model="group" label="Group" :items="groups" item-title="title" item-value="value" required></v-select>
+                                <v-select v-model="group" label="Group" :items="groups" item-title="title"
+                                    item-value="value" required></v-select>
                             </v-col>
                         </v-row>
                         <v-menu v-model="menu" :close-on-content-click="false">
@@ -166,15 +162,6 @@ onMounted(() => {
                 </UiParentCard>
             </v-col>
         </v-row>
-
-        <v-snackbar v-model="snackbar" @click="snackbar = false" timeout="3000" color="success" location="top right"
-            elevation="12" variant="elevated" height="80px" min-height="60px" transition="slide-x-reverse-transition">
-            <v-icon left size="30">mdi-check</v-icon>
-            <h3
-                style="margin: 0; font-size: 16px; font-weight: bold; color: white; display: inline-block; margin-left: 10px;">
-                Data sent successfully!
-            </h3>
-        </v-snackbar>
 
         <v-footer app>
             <v-toolbar flat style="background-color: transparent;">

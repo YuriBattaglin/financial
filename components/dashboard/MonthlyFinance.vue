@@ -7,13 +7,11 @@ const isDarkTheme = ref(false);
 const savedTheme = localStorage.getItem("theme") || "DarkTheme";
 isDarkTheme.value = savedTheme === "DarkTheme";
 const loggedUser = JSON.parse(localStorage.getItem('loggedUser') || '{}');
-const props = defineProps<{ selectedMonth: string, selectedGroup: any }>(); // Recebe o mês selecionado como prop
+const props = defineProps<{ selectedMonth: string, selectedGroup: any }>(); 
 
-/* Variables */
-const totalFinance = ref<number>(0); // Vai armazenar o total de IN - OUT
-const financeByDay = ref<number[]>([]); // Armazenará o valor por dia
+const totalFinance = ref<number>(0); 
+const financeByDay = ref<number[]>([]); 
 
-// Função para formatar o valor em reais
 const formatCurrency = (amount: number) => {
   return amount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 };
@@ -22,22 +20,19 @@ watchEffect(() => {
   const storedData = localStorage.getItem('finances') || '[]';
   const allTransactions = JSON.parse(storedData).filter((item: any) => item.user_id === loggedUser.id);
 
-  // Obtém o mês e ano da `prop.selectedMonth`
   const [monthName, year] = props.selectedMonth.split(" ");
-  const monthIndex = new Date(`${monthName} 1, 2000`).getMonth(); // Converte o nome do mês para um índice numérico
+  const monthIndex = new Date(`${monthName} 1, 2000`).getMonth(); 
   const selectedYear = parseInt(year);
 
-  // Obtém o número de dias do mês selecionado
   const daysInMonth = new Date(selectedYear, monthIndex + 1, 0).getDate();
   financeByDay.value = Array(daysInMonth).fill(0);
 
-  // Filtra as transações com base no mês e ano selecionados
   const filteredTransactions = allTransactions.filter((transaction: any) => {
-    const transactionDateParts = transaction.date.split('/'); // Divide a data no formato DD/MM/YYYY
+    const transactionDateParts = transaction.date.split('/'); 
     const transactionDate = new Date(
-      parseInt(transactionDateParts[2]), // Ano
-      parseInt(transactionDateParts[1]) - 1, // Mês (0-11)
-      parseInt(transactionDateParts[0]) // Dia
+      parseInt(transactionDateParts[2]), 
+      parseInt(transactionDateParts[1]) - 1, 
+      parseInt(transactionDateParts[0]) 
     );
 
     if (!props.selectedGroup) {
@@ -46,7 +41,6 @@ watchEffect(() => {
     return transactionDate.getMonth() === monthIndex && transactionDate.getFullYear() === selectedYear && transaction.group_id === props.selectedGroup?.id;
   });
 
-  // Calcula o total de "IN" e "OUT" e popula `financeByDay`
   totalFinance.value = filteredTransactions.reduce((acc: number, transaction: any) => {
     const amount = parseFloat(transaction.amount);
     const transactionDay = parseInt(transaction.date.split('/')[0]) - 1;
@@ -56,7 +50,6 @@ watchEffect(() => {
   }, 0);
 });
 
-// Opções do gráfico de área
 const areachartOptions = computed(() => {
   return {
     chart: {

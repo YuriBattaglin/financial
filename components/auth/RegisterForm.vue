@@ -36,21 +36,17 @@ const generateUniqueId = () => {
 };
 
 const saveUser = () => {
-    // Retrieve existing users or initialize an empty array
     const users = JSON.parse(localStorage.getItem('users') || '[]');
 
-    // Check if a user with the same email already exists
     const userExists = users.some(user => user.email === email.value);
 
     if (userExists) {
-        emailError.value = 'User with this email already exists!';  // Set the error message
-        return; // Do not proceed if the user exists
+        emailError.value = 'User with this email already exists!';  
+        return; 
     }
 
-    // Clear the error message if the email is valid
     emailError.value = '';
 
-    // Add the new user to the list
     users.push({
         id: generateUniqueId(),
         name: name.value,
@@ -58,7 +54,6 @@ const saveUser = () => {
         password: password.value
     });
 
-    // Save the updated list in localStorage
     localStorage.setItem('users', JSON.stringify(users));
     
     router.push('/auth/login');
@@ -68,7 +63,7 @@ const validateAndSubmit = async () => {
     if (!formRef.value) return;
     const { valid } = await formRef.value.validate();
     if (valid) {
-        saveUser(); // Save before redirecting
+        saveUser(); 
     }
 };
 </script>

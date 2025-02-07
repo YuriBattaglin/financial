@@ -15,10 +15,9 @@ const headers = ref([
 
 const dialog = ref(false);
 const itemToDelete = ref<any>(null);
-const snackbar = ref(false);
-const snackbarError = ref(false);
+const Snackbar = inject('Snackbar') as (msg: string, type?: string) => void;
 const loggedUser = JSON.parse(localStorage.getItem('loggedUser') || '{}');
-const finances = ref<any[]>(JSON.parse(localStorage.getItem('finances') || '[]')); // Lista de finances recuperada do localStorage
+const finances = ref<any[]>(JSON.parse(localStorage.getItem('finances') || '[]')); 
 
 useHead({
     title: "Groups - Finantial Controller",
@@ -43,7 +42,6 @@ const editItem = (item: any) => {
     navigateTo(`/groups/register?id=${item.id}`), { replace: true }
 };
 
-// Função para abrir o modal de confirmação
 const confirmDelete = (item: any) => {
     itemToDelete.value = item;
     dialog.value = true;
@@ -55,7 +53,7 @@ const deleteItem = () => {
 
         if (isAssociatedWithFinance) {
             dialog.value = false;
-            snackbarError.value = true;
+            Snackbar('This group is associated with a finance and cannot be deleted.', 'error');
             return;
         }
 
@@ -65,7 +63,7 @@ const deleteItem = () => {
             localStorage.setItem('groups', JSON.stringify(groups.value));
         }
         dialog.value = false;
-        snackbar.value = true;
+        Snackbar('Data deleted successfully!', 'success');
     }
 };
 
@@ -75,24 +73,6 @@ const cancelDelete = () => {
 </script>
 
 <template>
-     <v-snackbar v-model="snackbar" @click="snackbar = false" timeout="3000" color="success" location="top right"
-            elevation="12" variant="elevated" height="80px" min-height="60px" transition="slide-x-reverse-transition">
-            <v-icon left size="30">mdi-check</v-icon>
-            <h3
-                style="margin: 0; font-size: 16px; font-weight: bold; color: white; display: inline-block; margin-left: 10px;">
-                Data sent successfully!
-            </h3>
-        </v-snackbar>
-
-    <v-snackbar v-model="snackbarError" @click="snackbarError = false" timeout="3000" color="error" location="top right"
-        elevation="12" variant="elevated" max-width="300px" height="80px" min-height="60px" transition="slide-x-reverse-transition">
-        <div style="display: flex; align-items: center;">
-            <v-icon  left size="30">mdi-alert-circle</v-icon>
-            <h3 class="ml-2">
-                This group is associated with a finance and cannot be deleted.
-            </h3>
-        </div>
-    </v-snackbar>
     <v-row>
         <v-col cols="12" md="12">
             <UiParentCard title="Groups list">

@@ -7,7 +7,7 @@ const checkbox = ref(true);
 const email = ref('');
 const formRef = ref();
 const password = ref('');
-const loginError = ref(''); // Variável para armazenar a mensagem de erro do login
+const loginError = ref(''); 
 
 const emailRules = (value: string) => {
     loginError.value = '';
@@ -28,23 +28,21 @@ const validateAndSubmit = async () => {
     if (!formRef.value) return;
     const { valid } = await formRef.value.validate();
     if (valid) {
-        loginError.value = ''; // Reset login error before checking
+        loginError.value = ''; 
 
-        // Retrieve users from localStorage
         const users = JSON.parse(localStorage.getItem('users') || '[]');
 
-        // Check if the user exists with the provided email and password
         const user = users.find((user: any) => user.email === email.value);
 
         if (user && user.password === password.value) {
-            const expirationTime = Date.now() + 60 * 60 * 1000; // Expira em 1 hora
+            const expirationTime = Date.now() + 60 * 60 * 1000; 
             const loggedUser = { ...user, expirationTime };
 
             localStorage.setItem('loggedUser', JSON.stringify(loggedUser));
 
-            router.push('/dashboard'); // Redirect if the user is found and password matches
+            router.push('/dashboard'); 
         } else {
-            loginError.value = 'Invalid email or password!'; // Set the error message if login fails
+            loginError.value = 'Invalid email or password!'; 
         }
     }
 };

@@ -7,15 +7,14 @@ export default defineNuxtRouteMiddleware((to, from) => {
     const { isAuthenticated, renewSession } = useAuth();
 
     if (isAuthenticated()) {
-        // Se estiver logado e tentar acessar login ou register, redireciona para a dashboard
         if (to.path === '/auth/login' || to.path === '/register/login') {
             return navigateTo('/dashboard');
         }
 
-        renewSession(); // Renova o tempo de sessão
+        renewSession(); 
     } else {
         if (to.path !== '/auth/login' && to.path !== '/auth/register') {
-            return navigateTo('/auth/login'); // Redireciona para o login se não estiver autenticado
+            return navigateTo('/auth/login'); 
         }
     }
 });

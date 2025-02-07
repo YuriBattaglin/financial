@@ -3,7 +3,6 @@ import { useAuth } from '~/composables/useAuth';
 
 const { logout } = useAuth();
 
-// Evita erro no lado do servidor
 const loggedUser = process.client
   ? JSON.parse(localStorage.getItem('loggedUser') || 'null')
   : null;

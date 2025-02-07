@@ -31,37 +31,30 @@ const loadAvailableMonths = () => {
     const storedData = localStorage.getItem("finances") || "[]";
     const allTransactions: { date: string }[] = JSON.parse(storedData).filter((item: any) => item.user_id === loggedUser.id);;
 
-    // Obter todos os meses e anos únicos
     const uniqueMonths = Array.from(
         new Set(allTransactions.map(transaction => getMonthYearFromDate(transaction.date)))
     );
 
-    // Ordenar os meses com base no mês (utilizando o mêsMap)
     uniqueMonths.sort((a, b) => {
         const [monthA, yearA] = a.split(" ");
         const [monthB, yearB] = b.split(" ");
 
-        // Converter os nomes dos meses para índices numéricos usando o mêsMap
         const monthIndexA = monthMap[monthA.toLowerCase()];
         const monthIndexB = monthMap[monthB.toLowerCase()];
 
-        // Comparar ano primeiro e depois mês
         if (yearA === yearB) {
-            return monthIndexA - monthIndexB; // Ordenar por mês
+            return monthIndexA - monthIndexB; 
         } else {
-            return parseInt(yearA) - parseInt(yearB); // Ordenar por ano
+            return parseInt(yearA) - parseInt(yearB); 
         }
     });
 
-    // Atualizar os itens disponíveis no select
     items.value = uniqueMonths;
 
-    // Adicionar o mês atual, se não estiver na lista
     if (!items.value.includes(getCurrentMonthYear())) {
         items.value.push(getCurrentMonthYear());
     }
 
-    // Definir o mês atual como selecionado
     select.value = getCurrentMonthYear();
 };
 
@@ -70,22 +63,17 @@ const select = ref(getCurrentMonthYear());
 const selectedGroup = ref(<any>null);
 const items = ref<string[]>([]);
 const groupsData = localStorage.getItem('groups') || '[]';
-const groups = ref<any[]>(JSON.parse(groupsData)); // Aqui, `groups` vai armazenar os dados dos grupos
-// Página atual e número de itens por página
+const groups = ref<any[]>(JSON.parse(groupsData)); 
 const currentPage = ref(0);
 const itemsPerPage = 5;
-
-// Calcular o total de páginas
 const totalPages = computed(() => Math.ceil(groups.value.length / itemsPerPage));
 
-// Função para obter os grupos da página atual
 const paginatedGroups = computed(() => {
     const start = currentPage.value * itemsPerPage;
     const end = start + itemsPerPage;
     return groups.value.slice(start, end);
 });
 
-// Função para navegar entre as páginas
 const goToPage = (page) => {
     if (page >= 0 && page < totalPages.value) {
         currentPage.value = page;

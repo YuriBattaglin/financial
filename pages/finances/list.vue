@@ -8,6 +8,7 @@ const filters = ref({
     description: '', type: [], startDate: null,
     endDate: null
 });
+const Snackbar = inject('Snackbar') as (msg: string, type?: string) => void;
 
 const headers = ref([
 { title: 'Description', key: 'description' },
@@ -20,7 +21,6 @@ const headers = ref([
 
 const dialog = ref(false);
 const itemToDelete = ref<any>(null);
-const snackbar = ref(false);
 const menuStart = ref(false);
 const menuEnd = ref(false);
 const formattedStartDate = ref('');
@@ -50,7 +50,7 @@ const onStartDateChange = (date) => {
 };
 
 useHead({
-    title: "Finances - Finantial Controller",  // Título da página
+    title: "Finances - Finantial Controller", 
 });
 
 definePageMeta({
@@ -115,7 +115,6 @@ watchEffect(() => {
     }
 });
 
-// Função para formatar valores em reais
 const formatCurrency = (amount: number) => {
     return amount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 };
@@ -124,32 +123,28 @@ const editItem = (item: any) => {
     navigateTo(`/finances/register?id=${item.id}`), { replace: true }
 };
 
-// Função para abrir o modal de confirmação
 const confirmDelete = (item: any) => {
     itemToDelete.value = item;
     dialog.value = true;
 };
 
-// Função para excluir a linha após confirmação
 const deleteItem = () => {
     if (itemToDelete.value) {
         const index = finances.value.indexOf(itemToDelete.value);
         if (index !== -1) {
             finances.value.splice(index, 1);
-            localStorage.setItem('finances', JSON.stringify(finances.value)); // Atualiza o localStorage
+            localStorage.setItem('finances', JSON.stringify(finances.value)); 
         }
-        dialog.value = false; // Fecha o modal após a exclusão
-        snackbar.value = true;
+        dialog.value = false; 
+        Snackbar('Data deleted successfully!', 'success');
     }
 };
 
-// Função para cancelar a exclusão
 const cancelDelete = () => {
-    dialog.value = false; // Fecha o modal sem excluir
+    dialog.value = false; 
 };
 
 
-// Função para abrir o modal de filtros
 const openFilter = () => {
     filterDialog.value = true;
 };
@@ -157,15 +152,6 @@ const openFilter = () => {
 </script>
 
 <template>
-    <v-snackbar v-model="snackbar" @click="snackbar = false" timeout="3000" color="success" location="top right"
-            elevation="12" variant="elevated" height="80px" min-height="60px" transition="slide-x-reverse-transition">
-            <v-icon left size="30">mdi-check</v-icon>
-            <h3
-                style="margin: 0; font-size: 16px; font-weight: bold; color: white; display: inline-block; margin-left: 10px;">
-                Data sent successfully!
-            </h3>
-        </v-snackbar>
-
     <v-row>
         <v-col cols="12" md="12">
             <UiParentCard title="Finances list">
