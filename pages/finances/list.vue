@@ -58,6 +58,7 @@ definePageMeta({
 });
 
 watchEffect(() => {
+    
     const storedGroups = localStorage.getItem('groups') || '[]'; 
     const storedData = localStorage.getItem('finances') || '[]';
     const groups = JSON.parse(storedGroups); 
