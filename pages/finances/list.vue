@@ -11,9 +11,9 @@ const filters = ref({
 const Snackbar = inject('Snackbar') as (msg: string, type?: string) => void;
 
 const headers = ref([
-{ title: 'Description', key: 'description' },
-{ title: 'Group', key: 'group_description' },
-{ title: 'Date', key: 'date' },
+    { title: 'Description', key: 'description' },
+    { title: 'Group', key: 'group_description' },
+    { title: 'Date', key: 'date' },
     { title: 'Type', key: 'type' },
     { title: 'Amount', key: 'amount' },
     { title: 'Actions', key: 'actions' },
@@ -49,27 +49,35 @@ const onStartDateChange = (date) => {
     return formattedStartDate.value;
 };
 
-useHead({
-    title: "Finances - Finantial Controller", 
-});
+const resetFilters = () => {
+    filters.value.startDate = null;
+    filters.value.endDate = null;
+    filters.value.type = [];
+    formattedStartDate.value = '';
+    formattedEndDate.value = '';
+};
+
+    useHead({
+        title: "Finances - Finantial Controller",
+    });
 
 definePageMeta({
     middleware: 'auth',
 });
 
 watchEffect(() => {
-    
-    const storedGroups = localStorage.getItem('groups') || '[]'; 
+
+    const storedGroups = localStorage.getItem('groups') || '[]';
     const storedData = localStorage.getItem('finances') || '[]';
-    const groups = JSON.parse(storedGroups); 
+    const groups = JSON.parse(storedGroups);
     finances.value = JSON.parse(storedData).filter((item: any) => item.user_id === loggedUser.id);
 
     finances.value.forEach((item: any) => {
         const group = groups.find((group: any) => group.id === item.group_id);
         if (group) {
-            item.group_description = group.description; 
-        }else{
-            item.group_description = ''; 
+            item.group_description = group.description;
+        } else {
+            item.group_description = '';
         }
         const dateParts = item.date.split('/');
         if (dateParts.length === 3) {
@@ -133,15 +141,15 @@ const deleteItem = () => {
         const index = finances.value.indexOf(itemToDelete.value);
         if (index !== -1) {
             finances.value.splice(index, 1);
-            localStorage.setItem('finances', JSON.stringify(finances.value)); 
+            localStorage.setItem('finances', JSON.stringify(finances.value));
         }
-        dialog.value = false; 
+        dialog.value = false;
         Snackbar('Data deleted successfully!', 'success');
     }
 };
 
 const cancelDelete = () => {
-    dialog.value = false; 
+    dialog.value = false;
 };
 
 
@@ -237,15 +245,18 @@ const openFilter = () => {
                         <v-date-picker v-model="filters.endDate" @update:modelValue="onEndDateChange"></v-date-picker>
                     </v-menu>
                 </div>
+
                 <v-label>Type</v-label>
                 <div class="d-flex align-center justify-center">
                     <v-checkbox v-model="filters.type" label="In" value="I" class="mr-4" />
                     <v-checkbox v-model="filters.type" label="Out" value="O" />
                 </div>
-            </v-card-text>
 
+                <v-btn @click="resetFilters" class="mt-2" color="active" block >Reset Filters</v-btn>
+            </v-card-text>
         </v-card>
     </v-navigation-drawer>
+
 
     <v-footer app>
         <v-toolbar flat style="background-color: transparent;">
