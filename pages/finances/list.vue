@@ -68,6 +68,8 @@ watchEffect(() => {
         const group = groups.find((group: any) => group.id === item.group_id);
         if (group) {
             item.group_description = group.description; 
+        }else{
+            item.group_description = ''; 
         }
         const dateParts = item.date.split('/');
         if (dateParts.length === 3) {
