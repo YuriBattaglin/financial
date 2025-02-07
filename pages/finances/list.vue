@@ -64,7 +64,7 @@ watchEffect(() => {
     finances.value = JSON.parse(storedData).filter((item: any) => item.user_id === loggedUser.id);
 
     finances.value.forEach((item: any) => {
-        const group = groups.find((group: any) => group.value === item.group_id);
+        const group = groups.find((group: any) => group.id === item.group_id);
         if (group) {
             item.group_description = group.description; 
         }
