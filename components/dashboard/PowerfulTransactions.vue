@@ -2,17 +2,20 @@
 import { ref, onMounted } from 'vue';
 import { CircleIcon } from 'vue-tabler-icons';
 const loggedUser = JSON.parse(localStorage.getItem('loggedUser') || '{}');
-
+const props = defineProps<{ selectedGroup: any }>();
 const powerfulTransaction = ref<any[]>([]);
 const formatCurrency = (amount: number) => {
     return amount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 };
 
-onMounted(() => {
+watchEffect(() => {
     const storedData = localStorage.getItem('finances') || '[]';
 
     if (storedData) {
-        const allTransactions = JSON.parse(storedData).filter((item: any) => item.user_id === loggedUser.id);
+        let allTransactions = JSON.parse(storedData).filter((item: any) => item.user_id === loggedUser.id)
+        if(props.selectedGroup?.id){
+            allTransactions = allTransactions.filter((item: any) => item.group_id === props.selectedGroup.id);
+        }
 
         powerfulTransaction.value = allTransactions
             .sort((a: { amount: number }, b: { amount: number }) => b.amount - a.amount)

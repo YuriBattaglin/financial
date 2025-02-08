@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, onMounted } from "vue";
 import { useTheme } from "vuetify";
-
+const props = defineProps<{ selectedGroup: any }>();
 const theme = useTheme();
 const success = theme.current.value.colors.success;
 const muted = theme.current.value.colors.muted;
@@ -19,7 +19,11 @@ watchEffect(() => {
   let inTotal = 0;
   let outTotal = 0;
 
-  finances.forEach((item: { type: string, amount: string | number }) => {
+  finances.forEach((item: { type: string; amount: string | number; group_id: number }) => {
+    if (props.selectedGroup?.id) {
+      if (props.selectedGroup.id !== item.group_id) return;
+    }
+
     const amount = parseFloat(item.amount.toString());
     if (item.type === 'I') {
       inTotal += amount;
@@ -27,6 +31,7 @@ watchEffect(() => {
       outTotal += amount;
     }
   });
+
 
   Chart.value = [inTotal, outTotal];
 });
@@ -50,6 +55,9 @@ const chartOptions = computed(() => {
         donut: {
           size: "75%",
           background: "transparent",
+          labels: {
+            show: true,
+          }
         },
       },
     },

@@ -2,34 +2,37 @@
 import { ref, onMounted } from 'vue';
 
 const latestTransactions = ref<any[]>([]);
-    const loggedUser = JSON.parse(localStorage.getItem('loggedUser') || '{}');
-
+const loggedUser = JSON.parse(localStorage.getItem('loggedUser') || '{}');
+const props = defineProps<{ selectedGroup: any }>();
 
 const formatCurrency = (amount: number) => {
-  return amount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    return amount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 };
 
-onMounted(() => {
-  const storedData = localStorage.getItem('finances') || '[]';
+watchEffect(() => {
+    const storedData = localStorage.getItem('finances') || '[]';
 
-  if (storedData) {
-    const allTransactions = JSON.parse(storedData).filter((item: any) => item.user_id === loggedUser.id);
+    if (storedData) {
+        let allTransactions = JSON.parse(storedData).filter((item: any) => item.user_id === loggedUser.id)
+        if(props.selectedGroup?.id){
+            allTransactions = allTransactions.filter((item: any) => item.group_id === props.selectedGroup.id);
+        }
 
-    latestTransactions.value = allTransactions
-      .sort((a: { date: string }, b: { date: string }) => {
-        const parseDate = (dateStr: string) => {
-          const [day, month, year] = dateStr.split('/');
-          return new Date(`${year}-${month}-${day}`);
-        };
+        latestTransactions.value = allTransactions
+            .sort((a: { date: string }, b: { date: string }) => {
+                const parseDate = (dateStr: string) => {
+                    const [day, month, year] = dateStr.split('/');
+                    return new Date(`${year}-${month}-${day}`);
+                };
 
-        const dateA = parseDate(a.date);
-        const dateB = parseDate(b.date);
-        return dateB.getTime() - dateA.getTime(); 
-      })
-      .slice(0, 4); 
-  } else {
-    latestTransactions.value = [];
-  }
+                const dateA = parseDate(a.date);
+                const dateB = parseDate(b.date);
+                return dateB.getTime() - dateA.getTime();
+            })
+            .slice(0, 4);
+    } else {
+        latestTransactions.value = [];
+    }
 });
 </script>
 
@@ -65,7 +68,7 @@ onMounted(() => {
                         </td>
                         <td>
                             <h6 class="text-h6 text-right">
-                                 {{ formatCurrency(parseFloat(item.amount)) }}
+                                {{ formatCurrency(parseFloat(item.amount)) }}
                             </h6>
                         </td>
                     </tr>

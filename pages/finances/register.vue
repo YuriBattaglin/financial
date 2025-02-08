@@ -69,8 +69,8 @@ const generateUniqueId = () => {
 };
 
 function adjustMonthByIndex(dateStr, index) {
-    const [day, month, year] = dateStr.split('/'); 
-    const date = new Date(year, month - 1, day); 
+    const [day, month, year] = dateStr.split('/');
+    const date = new Date(year, month - 1, day);
     date.setMonth(date.getMonth() + index);
     return date.toLocaleDateString('pt-BR');
 }
@@ -94,7 +94,7 @@ const submitForm = () => {
             };
 
             if ((repeatType.value === 'parcel' || repeatType.value === 'repeat') && !isNaN(quantity.value)) {
-                let newFinances = []; 
+                let newFinances = [];
 
                 if (repeatType.value === 'parcel') {
                     const amountPerFinance = amount.value ? amount.value / quantity.value : 0;
@@ -102,29 +102,38 @@ const submitForm = () => {
 
                     for (let i = 0; i < quantity.value; i++) {
                         let newFinance = { ...formData };
+                        newFinance.id = generateUniqueId();
                         newFinance.date = adjustMonthByIndex(formData.date, i);
-                        newFinances.push(newFinance);  
+                        newFinances.push(newFinance);
                     }
                 } else if (repeatType.value === 'repeat') {
                     for (let i = 0; i < quantity.value; i++) {
                         let newFinance = { ...formData };
+                        newFinance.id = generateUniqueId();
                         newFinance.date = adjustMonthByIndex(formData.date, i);
-                        newFinances.push(newFinance);  
+                        newFinances.push(newFinance);
                     }
                 }
 
-                allData = newFinances; 
+                allData = newFinances;
             } else {
-                allData.push(formData); 
+                allData.push(formData);
             }
 
             const existingData = localStorage.getItem('finances');
             let storedData = existingData ? JSON.parse(existingData) : [];
 
+            if (isEditing.value) {
+                const index = storedData.findIndex(item => item.id === currentId.value);
+                if (index !== -1) {
+                    storedData = storedData.filter(item => item.id !== currentId.value);
+                }
+            }
             storedData = [...storedData, ...allData];
+
             localStorage.setItem('finances', JSON.stringify(storedData));
 
-            Snackbar('Data sent successfully!', 'success');
+            Snackbar(isEditing.value ? 'Data updated successfully!' : 'Data sent successfully!', 'success');
 
             form.value?.reset();
             description.value = '';
@@ -132,6 +141,9 @@ const submitForm = () => {
             type.value = 'I';
             note.value = '';
             formattedDate.value = '';
+            isEditing.value = false;
+            currentId.value = '';
+
             navigateTo('/finances/list', { replace: true });
         }
     } catch (error) {
@@ -140,7 +152,6 @@ const submitForm = () => {
 };
 
 onMounted(() => {
-
     try {
         const storedGroups = JSON.parse(localStorage.getItem('groups') || '[]');
         groups.value = storedGroups.map(group => ({
@@ -181,7 +192,7 @@ onMounted(() => {
 
         <v-row>
             <v-col cols="12" md="12">
-                <UiParentCard title="Register finance">
+                <UiParentCard :title="`${isEditing ? 'Edit finance' : 'Register finance'}`">
                     <div class="pa-7 pt-1 flex-grow-1">
                         <v-text-field v-model="description" maxlength="25" label="Description"
                             :rules="[descriptionRules]" required></v-text-field>
@@ -213,7 +224,7 @@ onMounted(() => {
                                 </v-menu>
                             </v-col>
                             <v-col :cols="12" :md="3" class="d-flex align-center pa-0">
-                                <v-radio-group v-model="repeatType" inline :disabled="!selectedDate">
+                                <v-radio-group v-model="repeatType" inline :disabled="!formattedDate">
                                     <v-tooltip location="top" content-class="bg-success">
                                         <template v-slot:activator="{ props }">
                                             <v-radio label="Parcel" class="mr-4" value="parcel" color="success"
@@ -233,7 +244,7 @@ onMounted(() => {
                             </v-col>
                             <v-col :cols="12" :md="4" class="pa-0">
                                 <v-text-field v-model="quantity" label="Quantity" type="number" :rules="[quantityRules]"
-                                    required :disabled="!repeatType || !selectedDate" />
+                                    required :disabled="!repeatType || !formattedDate" />
                             </v-col>
                         </v-row>
 

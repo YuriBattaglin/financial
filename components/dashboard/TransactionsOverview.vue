@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from "vue";
 import { useTheme } from "vuetify";
-const props = defineProps<{ selectedMonth: string, selectedGroup: any }>(); 
+const props = defineProps<{ selectedMonth: string, selectedGroup: any }>();
 
 const getMonthYearFromDate = (date: string) => {
   const [day, month, year] = date.split("/");
@@ -84,8 +84,15 @@ const getChartDataForMonth = (monthYear: string) => {
   const daysInMonth = new Date(parseInt(year), monthIndex + 1, 0).getDate();
 
   for (let i = 1; i <= daysInMonth; i++) {
-    const earningsForDay = filteredTransactions.filter((t: any) => new Date(formatDate(t.date)).getDate() === i && t.type === "I");
-    const expensesForDay = filteredTransactions.filter((t: any) => new Date(formatDate(t.date)).getDate() === i && t.type === "O");
+    const earningsForDay = filteredTransactions.filter((t: any) => {
+      const transactionDate = new Date(formatDate(t.date) + "T00:00:00");
+      return transactionDate.getDate() === i && t.type === "I";
+    });
+
+    const expensesForDay = filteredTransactions.filter((t: any) => {
+      const transactionDate = new Date(formatDate(t.date) + "T00:00:00");
+      return transactionDate.getDate() === i && t.type === "O";
+    });
 
     dailyEarnings.push(earningsForDay.reduce((sum: number, t: any) => sum + parseFloat(t.amount), 0));
     dailyExpenses.push(expensesForDay.reduce((sum: number, t: any) => sum + parseFloat(t.amount), 0));
@@ -107,8 +114,8 @@ const chartOptions = computed(() => {
 
   return {
     series: [
-      { name: "Earnings this day:", data: chartData.value.dailyEarnings },
-      { name: "Expenses this day:", data: chartData.value.dailyExpenses },
+      { name: "Earnings per day:", data: chartData.value.dailyEarnings },
+      { name: "Expenses per day:", data: chartData.value.dailyExpenses },
     ],
     chartOptions: {
       grid: { borderColor: "rgba(0,0,0,0.1)", strokeDashArray: 3 },
@@ -138,7 +145,8 @@ onMounted(loadAvailableMonths);
   <v-card elevation="10" class="withbg">
     <v-card-item>
       <div class="d-sm-flex align-center justify-space-between pt-sm-2">
-        <v-card-title class="text-h5">Overview</v-card-title>
+        <v-card-title class="text-h5">Overview<span
+            class="text-subtitle-1 text-muted ml-2">by month</span></v-card-title>
       </div>
       <div class="mt-6">
         <apexchart type="bar" height="370px" :options="chartOptions.chartOptions" :series="chartOptions.series">

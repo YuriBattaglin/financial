@@ -65,6 +65,10 @@ const areachartOptions = computed(() => {
       },
       group: "sparklines",
     },
+    toolbar: {
+      autoSelected: "pan",
+      show: false
+    },
     colors: [success],
     stroke: {
       curve: "smooth",
@@ -83,6 +87,7 @@ const areachartOptions = computed(() => {
         show: true,
       },
     },
+    
   };
 });
 

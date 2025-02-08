@@ -149,7 +149,7 @@ onMounted(loadAvailableMonths);
                         <MonthlyFinance :selectedMonth="select" :selectedGroup="selectedGroup" />
                     </div>
                     <div>
-                        <TotalGains />
+                        <TotalGains :selectedGroup="selectedGroup" />
                     </div>
                 </v-col>
                 <v-col cols="12" lg="8">
@@ -157,10 +157,10 @@ onMounted(loadAvailableMonths);
                 </v-col>
 
                 <v-col cols="12" lg="8">
-                    <LatestTransactions />
+                    <LatestTransactions :selectedGroup="selectedGroup" />
                 </v-col>
                 <v-col cols="12" lg="4">
-                    <PowerfulTransactions />
+                    <PowerfulTransactions :selectedGroup="selectedGroup" />
                 </v-col>
             </v-row>
         </v-col>
