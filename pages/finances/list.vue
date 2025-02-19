@@ -121,6 +121,7 @@ watchEffect(() => {
             return true;
         });
     }
+
 });
 
 const formatCurrency = (amount: number) => {
@@ -165,7 +166,7 @@ const openFilter = () => {
             <UiParentCard title="Finances list">
                 <v-text-field v-model="filters.description" class="px-4" label="Search" outlined dense></v-text-field>
 
-                <v-data-table :headers="headers" :items="finances" item-value="description" items-per-page="10"
+                <v-data-table :headers="headers" :items="finances" item-value="id" items-per-page="10"
                     class="px-4">
                     <template v-slot:[`item.amount`]="{ item }">
                         <span :class="item.amount >= 0 ? 'text-success' : 'text-error'">
