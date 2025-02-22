@@ -54,7 +54,8 @@ const submitForm = () => {
             const formData = {
                 id: isEditing.value ? currentId.value : generateUniqueId(),  
                 description: description.value,
-                icon: selectedIcon.value,  
+                icon: selectedIcon.value,
+                type: iconOptions.value.find(option => option.icon === selectedIcon.value)?.label || '', 
                 user_id: loggedUser.id
             };
 

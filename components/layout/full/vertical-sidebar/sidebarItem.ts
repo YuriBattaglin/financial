@@ -1,6 +1,7 @@
 import {
     CurrencyDollarIcon,
     LayoutDashboardIcon,
+    LayoutKanbanIcon,
     UsersGroupIcon,
 } from 'vue-tabler-icons';
 
@@ -49,6 +50,12 @@ const sidebarItem: menu[] = [
         //        to: '/finances/list',
         //    }
         //]
+    },
+    { header: 'Tools' },
+    {
+        title: 'Tasks (Beta)',
+        icon: LayoutKanbanIcon,
+        to: '/tasks/kanban',
     },
 ];
 

@@ -20,9 +20,9 @@ const getMonthYearFromDate = (date: string) => {
 };
 
 const handleClick = (group) => {
-    if(selectedGroup.value === group){
+    if (selectedGroup.value === group) {
         selectedGroup.value = null;
-    }else{
+    } else {
         selectedGroup.value = group;
     }
 };
@@ -43,9 +43,9 @@ const loadAvailableMonths = () => {
         const monthIndexB = monthMap[monthB.toLowerCase()];
 
         if (yearA === yearB) {
-            return monthIndexA - monthIndexB; 
+            return monthIndexA - monthIndexB;
         } else {
-            return parseInt(yearA) - parseInt(yearB); 
+            return parseInt(yearA) - parseInt(yearB);
         }
     });
 
@@ -63,7 +63,7 @@ const select = ref(getCurrentMonthYear());
 const selectedGroup = ref(<any>null);
 const items = ref<string[]>([]);
 const groupsData = localStorage.getItem('groups') || '[]';
-const groups = ref<any[]>(JSON.parse(groupsData)); 
+const groups = ref<any[]>(JSON.parse(groupsData));
 const currentPage = ref(0);
 const itemsPerPage = 5;
 const totalPages = computed(() => Math.ceil(groups.value.length / itemsPerPage));
@@ -114,31 +114,38 @@ onMounted(loadAvailableMonths);
                 {{ randomGreeting }}
             </v-label>
         </v-col>
+
         <v-col cols="auto" v-if="groups.length > 0">
             <v-btn @click="goToPage(currentPage - 1)" :disabled="currentPage <= 0" icon>
                 <v-icon>mdi-chevron-left</v-icon>
             </v-btn>
+
             <v-btn v-for="(group, index) in paginatedGroups" :key="index" icon @click="handleClick(group)" class="mx-1"
-            :class="{ 'v-btn--active': selectedGroup === group }"
-            >
-                <v-icon v-if="group.icon" :icon="group.icon"></v-icon>
-                <v-icon v-else>mdi-lightbulb-question</v-icon>
+                :class="{ 'v-btn--active': selectedGroup === group }">
+                <v-tooltip location="top" content-class="bg-success">
+                    <template v-slot:activator="{ props }">
+                        <v-icon v-bind="props" :icon="group.icon || 'mdi-lightbulb-question'"></v-icon>
+                    </template>
+                    <span>{{ group.description}}</span> 
+                </v-tooltip>
             </v-btn>
+
             <v-btn @click="goToPage(currentPage + 1)" :disabled="currentPage >= totalPages - 1" icon>
                 <v-icon>mdi-chevron-right</v-icon>
             </v-btn>
         </v-col>
+
         <v-col cols="auto">
             <v-select v-model="select" :items="items" variant="outlined" density="compact" class="ml-3"
                 hide-details></v-select>
         </v-col>
     </v-row>
     <v-row v-if="selectedGroup">
-    <span class="text-subtitle-1 font-weight-bold ms-3">
-          {{ 'Showing by group:' }}
-          <span class="text-subtitle-1 text-muted ms-1">
-            {{ selectedGroup.description }}
-          </span>
+        <span class="text-subtitle-1 font-weight-bold ms-3">
+            {{ 'Showing by group:' }}
+            <span class="text-subtitle-1 text-muted ms-1">
+                {{ selectedGroup.description }}
+            </span>
         </span>
     </v-row>
     <v-row>

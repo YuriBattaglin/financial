@@ -10,6 +10,7 @@ const filters = ref({
 const headers = ref([
     { title: '', key: 'icon' },
     { title: 'Description', key: 'description' },
+    { title: 'Type', key: 'type' },
     { title: 'Actions', key: 'actions' },
 ]);
 

@@ -33,11 +33,11 @@ const loggedUser = process.client
                     </template>
                     <v-list-item-title class="pl-4 text-body-1">My Profile (Soon)</v-list-item-title>
                 </v-list-item>
-                <v-list-item value="item3" active-color="success"> 
+                <v-list-item value="item3" active-color="success" @click="navigateTo('/tasks/kanban')"> 
                     <template v-slot:prepend>
                         <ListCheckIcon stroke-width="1.5"  size="20"/>
                     </template>
-                    <v-list-item-title class="pl-4 text-body-1">My Task (Soon)</v-list-item-title>
+                    <v-list-item-title class="pl-4 text-body-1">My Tasks (Beta)</v-list-item-title>
                 </v-list-item> 
             </v-list>
             <div class="pt-4 pb-4 px-5 text-center">
