@@ -176,9 +176,9 @@ onMounted(() => {
                 <div :id="'column-' + index" class="task-list d-flex flex-wrap justify-center">
                     <v-col v-for="task in column.tasks" :key="task?.id" cols="12">
                         <v-card style="cursor: grab;" class="task-card pa-2" elevation="2">
-                            <v-card-text>
-                                <span class="editable-text" @click="editTask(task, index)">{{ task?.name }}</span>
-                            </v-card-text>
+                            <v-card-title>
+                                <span class="editable-text h6" @click="editTask(task, index)">{{ task?.name }}</span>
+                            </v-card-title>
                         </v-card>
                     </v-col>
                 </div>
