@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, nextTick } from 'vue';
 import { Sortable } from 'sortablejs';
 
 useHead({
@@ -66,7 +66,7 @@ const selectColor = (color: string) => {
     newColumn.value.color = color;
 };
 
-const addColumn = () => {
+const addColumn = async () => {
     if (newColumn.value.title) {
         columns.value.push({
             title: newColumn.value.title,
@@ -76,43 +76,51 @@ const addColumn = () => {
 
         saveToLocalStorage();
 
+        // Espera a reatividade e DOM serem atualizados antes de inicializar o Sortable
+        await nextTick();
+
+        // Após adicionar a coluna, inicialize o Sortable nela
+        initializeSortable(columns.value.length - 1);
+
         newColumn.value = { title: '', color: 'primary' };
         newColumnDialog.value = false;
     }
 };
 
-onMounted(() => {
-    columns.value.forEach((column, index) => {
-        const el = document.getElementById(`column-${index}`);
-        if (el) {
-            new Sortable(el, {
-                group: 'tasks',
-                animation: 200,
-                onEnd(evt) {
-                    const movedTask = column.tasks.splice(evt.oldIndex, 1)[0];
+// Função para inicializar o Sortable para uma coluna
+const initializeSortable = (index: number) => {
+    const el = document.getElementById(`column-${index}`);
+    if (el) {
+        new Sortable(el, {
+            group: 'tasks',
+            animation: 200,
+            onEnd(evt) {
+                const movedTask = columns.value[index].tasks.splice(evt.oldIndex, 1)[0];
 
-                    // Identificar a coluna de origem e destino
-                    const sourceColumnIndex = index;
-                    const targetColumnIndex = parseInt(evt.to.id.replace('column-', ''));
+                const sourceColumnIndex = index;
+                const targetColumnIndex = parseInt(evt.to.id.replace('column-', ''));
 
-                    if (sourceColumnIndex !== targetColumnIndex) {
-                        // Remover a tarefa da coluna de origem
-                        const sourceColumn = columns.value[sourceColumnIndex];
-                        sourceColumn.tasks = sourceColumn.tasks.filter(task => task.id !== movedTask.id);
+                if (sourceColumnIndex !== targetColumnIndex) {
+                    const sourceColumn = columns.value[sourceColumnIndex];
+                    sourceColumn.tasks = sourceColumn.tasks.filter(task => task.id !== movedTask.id);
 
-                        // Adicionar a tarefa à coluna de destino
-                        const targetColumn = columns.value[targetColumnIndex];
-                        targetColumn.tasks.splice(evt.newIndex, 0, movedTask);
-                    } else {
-                        // Caso contrário, só movemos a tarefa dentro da mesma coluna
-                        column.tasks.splice(evt.newIndex, 0, movedTask);
-                    }
-
-                    console.log(columns.value);
-                    saveToLocalStorage(); // Salvar dados após mover a tarefa
+                    const targetColumn = columns.value[targetColumnIndex];
+                    targetColumn.tasks.splice(evt.newIndex, 0, movedTask);
+                } else {
+                    columns.value[sourceColumnIndex].tasks.splice(evt.newIndex, 0, movedTask);
                 }
-            });
-        }
+
+                console.log(columns.value);
+                saveToLocalStorage();
+            }
+        });
+    }
+};
+
+onMounted(() => {
+    // Inicializa o Sortable para as colunas existentes assim que a página for carregada
+    columns.value.forEach((column, index) => {
+        initializeSortable(index); // Inicializa o sortable para as colunas existentes
     });
 });
 
@@ -164,8 +172,8 @@ onMounted(() => {
                     label="Status"></v-select>
             </v-card-text>
             <v-card-actions>
-                <v-btn color="red" text @click="dialog = false">Cancelar</v-btn>
-                <v-btn color="green" text @click="saveTask">Salvar</v-btn>
+                <v-btn  text @click="dialog = false">Cancel</v-btn>
+                <v-btn color="success" text @click="saveTask">Save</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -175,16 +183,27 @@ onMounted(() => {
             <v-card-title>Add new status</v-card-title>
             <v-card-text>
                 <v-text-field v-model="newColumn.title" label="Name"></v-text-field>
-                <div class="d-flex">
-                    <v-btn icon v-for="color in availableColors" :key="color" :color="color" class="ma-2"
-                        variant="elevated" @click="selectColor(color)" :size="newColumn.color === color ? 36 : 32">
-                    </v-btn>
-                </div>
-            </v-card-text>
-            <v-card-actions>
-                <v-btn color="red" text @click="newColumnDialog = false">Cancel</v-btn>
-                <v-btn color="green" text @click="addColumn">Add</v-btn>
-            </v-card-actions>
+
+                <div class="d-flex flex-wrap justify-center">
+                <v-btn 
+                    icon 
+                    v-for="color in availableColors" 
+                    :key="color" 
+                    :color="color" 
+                    class="ma-2" 
+                    variant="elevated" 
+                    @click="selectColor(color)" 
+                    :size="newColumn.color === color ? 36 : 32"
+                    :style="{ minWidth: '36px', minHeight: '36px' }"
+                ></v-btn>
+            </div>
+        </v-card-text>
+
+        <v-card-actions>
+            <!-- Ajuste para os botões de ações -->
+            <v-btn  text @click="newColumnDialog = false">Cancel</v-btn>
+            <v-btn color="success" text @click="addColumn">Add</v-btn>
+        </v-card-actions>
         </v-card>
     </v-dialog>
 </template>
