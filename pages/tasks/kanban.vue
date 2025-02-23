@@ -163,8 +163,7 @@ onMounted(() => {
 <template>
     <h4 class="text-h4 mb-6">Tasks Kanban</h4>
     <v-row class="d-flex flex-nowrap overflow-x-auto" style="white-space: nowrap;">
-        <v-col v-for="(column, index) in columns" :key="index" cols="12" md="3" class="flex-grow-0"
-            style="min-width: 320px;">
+        <v-col v-for="(column, index) in columns" :key="index" cols="12" md="3" class="flex-grow-0">
             <v-card :color="column.color" variant="tonal" class="pa-3" elevation="3">
                 <v-card-title class="d-flex justify-space-between align-center">
                     <span>{{ column.title }}</span>
@@ -173,7 +172,7 @@ onMounted(() => {
                     </v-btn>
                 </v-card-title>
 
-                <div :id="'column-' + index" class="task-list d-flex flex-wrap justify-center">
+                <div :id="'column-' + index" class="task-list  overflow-y-auto d-flex flex-wrap justify-center">
                     <v-col v-for="task in column.tasks" :key="task?.id" cols="12">
                         <v-card style="cursor: grab;" class="task-card pa-2" elevation="2">
                             <v-card-title>
@@ -262,10 +261,20 @@ onMounted(() => {
 </template>
 
 <style scoped>
+
+
 .task-list {
-    min-height: 130px;
+    min-height: 600px;
+    max-height: 600px;
     padding: 10px;
     border-radius: 8px;
+}
+
+@media (max-width: 768px) { /* Ajusta para telas menores (ex: celulares) */
+    .task-list {
+        min-height: 70vh;
+        max-height: 70vh; /* Define a altura máxima como a altura total da tela */
+    }
 }
 
 .task-card {
