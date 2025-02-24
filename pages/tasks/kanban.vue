@@ -132,7 +132,6 @@ const initializeSortable = (index: number) => {
             animation: 200,
             onEnd(evt) {
                 const movedTask = columns.value[index].tasks.splice(evt.oldIndex, 1)[0];
-
                 const sourceColumnIndex = index;
                 const targetColumnIndex = parseInt(evt.to.id.replace('column-', ''));
 
@@ -146,12 +145,12 @@ const initializeSortable = (index: number) => {
                     columns.value[sourceColumnIndex].tasks.splice(evt.newIndex, 0, movedTask);
                 }
 
-                console.log(columns.value);
                 saveToLocalStorage();
             }
         });
     }
 };
+
 onMounted(() => {
     columns.value.forEach((column, index) => {
         initializeSortable(index);
@@ -162,34 +161,39 @@ onMounted(() => {
 
 <template>
     <h4 class="text-h4 mb-6">Tasks Kanban</h4>
-    <v-row class="d-flex flex-nowrap overflow-x-auto" style="white-space: nowrap;">
-        <v-col v-for="(column, index) in columns" :key="index" cols="12" md="3" class="flex-grow-0">
-            <v-card :color="column.color" variant="tonal" class="pa-3" elevation="3">
+    <v-row class="d-flex flex-nowrap overflow-x-auto">
+
+        <v-col v-for="(column, index) in columns" :key="index" cols="8" md="3" class="d-flex">
+            <v-card :color="column.color" variant="tonal" class="pa-3 task-list" elevation="3">
                 <v-card-title class="d-flex justify-space-between align-center">
                     <span>{{ column.title }}</span>
-                    <v-btn icon @click="openDeleteDialog(index)">
-                        <v-icon>mdi-trash-can-outline</v-icon>
-                    </v-btn>
+                    <div>
+                        <v-btn icon @click="openDeleteDialog(index)">
+                            <v-icon>mdi-trash-can-outline</v-icon>
+                        </v-btn>
+                        <v-btn icon @click="newTask(index)">
+                            <v-icon>mdi-plus</v-icon>
+                        </v-btn>
+                    </div>
                 </v-card-title>
-
-                <div :id="'column-' + index" class="task-list  overflow-y-auto d-flex flex-wrap justify-center">
+                <div :id="'column-' + index" class="d-flex flex-wrap justify-center"
+                    :style="{ minHeight: column.tasks.length === 0 ? '60vh' : 'auto' }">
                     <v-col v-for="task in column.tasks" :key="task?.id" cols="12">
-                        <v-card style="cursor: grab;" class="task-card pa-2" elevation="2">
+                        <v-card style="cursor: all-scroll;" class="task-card pa-2" elevation="2">
                             <v-card-title>
-                                <span class="editable-text h6" @click="editTask(task, index)">{{ task?.name }}</span>
+                                <span class="editable-text h6" @click="editTask(task, index)">
+                                    {{ task?.name }}
+                                </span>
                             </v-card-title>
                         </v-card>
                     </v-col>
                 </div>
 
-                <v-card class="d-flex justify-center" @click="newTask(index)">
-                    <v-icon size="50">mdi-plus</v-icon>
-                </v-card>
             </v-card>
         </v-col>
 
-        <v-col cols="12" md="3" style="min-width: 320px;">
-            <v-card color="dark " variant="plain" class="pa-3 border text-center task-list" elevation="3"
+        <v-col cols="8" md="3" class="d-flex">
+            <v-card color="dark" variant="plain" class="pa-3 border text-center task-list" elevation="3"
                 @click="newColumnDialog = true">
                 <v-card-title>
                     Add new status
@@ -216,7 +220,7 @@ onMounted(() => {
                     <v-btn text @click="dialog = false">Cancel</v-btn>
                     <v-btn v-if="modalTitle === 'Edit task'" text color="error" @click="deleteTask">Delete</v-btn>
                     <v-btn color="success" text @click="saveTask">{{ modalTitle === 'Edit task' ? 'Save' :
-                        'Add'}}</v-btn>
+                        'Add' }}</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -261,20 +265,10 @@ onMounted(() => {
 </template>
 
 <style scoped>
-
-
 .task-list {
-    min-height: 65vh;
-    max-height: 65vh;
+    min-height: 80vh;
     padding: 10px;
     border-radius: 8px;
-}
-
-@media (max-width: 768px) { /* Ajusta para telas menores (ex: celulares) */
-    .task-list {
-        min-height: 70vh;
-        max-height: 70vh; /* Define a altura máxima como a altura total da tela */
-    }
 }
 
 .task-card {
